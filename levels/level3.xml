@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<level>
+  <settings>
+    <size width="647" height="634"/>
+    <time seconds="120"/>
+  </settings>
+  <tiles>
+		<fence xStart="37" yStart="234" xEnd="282" yEnd="234"/>
+		<fence xStart="37" yStart="234" xEnd="37" yEnd="318"/>
+		<fence xStart="37" yStart="318" xEnd="282" yEnd="318"/>
+		<fence xStart="282" yStart="4" xEnd="282" yEnd="234"/>
+		<fence xStart="282" yStart="4" xEnd="384" yEnd="4"/>
+		<fence xStart="384" yStart="4" xEnd="384" yEnd="234"/>
+		<fence xStart="384" yStart="234" xEnd="642" yEnd="234"/>
+		<fence xStart="642" yStart="234" xEnd="642" yEnd="314"/>
+		<fence xStart="384" yStart="314" xEnd="642" yEnd="314"/>
+		<fence xStart="282" yStart="317" xEnd="282" yEnd="387"/>
+		<fence xStart="162" yStart="387" xEnd="282" yEnd="387"/>
+		<fence xStart="384" yStart="314" xEnd="384" yEnd="469"/>
+		<fence xStart="250" yStart="469" xEnd="384" yEnd="469"/>
+		<fence xStart="162" yStart="387" xEnd="162" yEnd="543"/>
+		<fence xStart="250" yStart="469" xEnd="250" yEnd="629"/>
+		<fence xStart="36" yStart="629" xEnd="249" yEnd="629"/>
+		<fence xStart="36" yStart="446" xEnd="36" yEnd="629"/>
+		<fence xStart="36" yStart="446" xEnd="162" yEnd="446"/>
+		<bush x="177" y="166" style="1"/>
+		<bush x="230" y="326" style="1"/>
+		<bush x="388" y="318" style="1"/>
+		<bush x="386" y="0" style="1"/>
+		<bush x="499" y="171" style="1"/>
+		<bush x="278" y="501" style="1"/>
+		<bush x="0" y="639" style="1"/>
+		<bush x="337" y="630" style="1"/>
+		<bush x="-19" y="383" style="1"/>
+		<tree x="403" y="107" style="1"/>
+		<tree x="216" y="163" style="1"/>
+		<tree x="17" y="578" style="1"/>
+		<tree x="73" y="372" style="1"/>
+		<tree x="292" y="544" style="1"/>
+    <exit x="574" y="245" style="1"/>
+    <exit x="296" y="13" style="1"/>
+    <exit x="47" y="247" style="1"/>
+  </tiles>
+  <characters>
+		<dog x="103" y="497"/>
+		<sheep x="212" y="264"/>
+		<sheep x="222" y="291"/>
+		<sheep x="448" y="261"/>
+		<sheep x="444" y="295"/>
+		<sheep x="309" y="181"/>
+		<sheep x="355" y="199"/>
+  </characters>
+</level>

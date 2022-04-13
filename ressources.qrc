@@ -1,0 +1,81 @@
+<RCC>
+    <qresource prefix="/">
+        <file>levels/level0.xml</file>
+        <file>levels/level1.xml</file>
+        <file>levels/level2.xml</file>
+        <file>levels/level3.xml</file>
+				
+        <file>img/barkButton.svg</file>
+        <file>img/pauseButton.svg</file>
+        <file>img/stopButton.svg</file>
+        <file>img/retryButton.svg</file>
+        <file>img/playButton.svg</file>
+        <file>img/boxBackground.svg</file>
+				
+        <file>img/dog01.png</file>
+        <file>img/dog02.png</file>
+        <file>img/dog03.png</file>
+        <file>img/dog04.png</file>
+        <file>img/dog05.png</file>
+        <file>img/dog06.png</file>
+        <file>img/dog07.png</file>
+        <file>img/dog01.svg</file>
+        <file>img/dog02.svg</file>
+        <file>img/dog03.svg</file>
+        <file>img/dog04.svg</file>
+        <file>img/dog05.svg</file>
+        <file>img/dog06.svg</file>
+        <file>img/dog07.svg</file>
+				
+        <file>img/sheep01.png</file>
+        <file>img/sheep01.svg</file>
+				
+        <file>img/bush1.png</file>
+        <file>img/bush1.svg</file>
+        <file>img/exit1.png</file>
+        <file>img/exit1.svg</file>
+        <file>img/tree1.png</file>
+        <file>img/tree1.svg</file>
+				
+        <file>img/bonus/box.png</file>
+        <file>img/bonus/surprise.png</file>
+        <file>img/bonus/drunkBox.png</file>
+        <file>img/bonus/drunkMode.png</file>
+        <file>img/bonus/powerBarkBox.png</file>
+        <file>img/bonus/powerBarkMode.png</file>
+        <file>img/bonus/sheepOnSpeedBox.png</file>
+        <file>img/bonus/sheepOnSpeedMode.png</file>
+        <file>img/bonus/sheepSleepBox.png</file>
+        <file>img/bonus/sheepSleepMode.png</file>
+        <file>img/bonus/timeBonusBox.png</file>
+        <file>img/bonus/timeBonusMode.png</file>
+				
+        <file>img/bonus/box.svg</file>
+        <file>img/bonus/surprise.svg</file>
+        <file>img/bonus/drunkBox.svg</file>
+        <file>img/bonus/drunkMode.svg</file>
+        <file>img/bonus/powerBarkBox.svg</file>
+        <file>img/bonus/powerBarkMode.svg</file>
+        <file>img/bonus/sheepOnSpeedBox.svg</file>
+        <file>img/bonus/sheepOnSpeedMode.svg</file>
+        <file>img/bonus/timeBonusBox.svg</file>
+        <file>img/bonus/timeBonusMode.svg</file>
+        <file>img/bonus/sheepSleepBox.svg</file>
+        <file>img/bonus/sheepSleepMode.svg</file>
+				
+        <file>img/editor/bush.svg</file>
+        <file>img/editor/dog.svg</file>
+        <file>img/editor/eraser.svg</file>
+        <file>img/editor/exit.svg</file>
+        <file>img/editor/fence.svg</file>
+        <file>img/editor/pan.svg</file>
+        <file>img/editor/play.svg</file>
+        <file>img/editor/load.svg</file>
+        <file>img/editor/save.svg</file>
+        <file>img/editor/leave.svg</file>
+        <file>img/editor/sheep.svg</file>
+        <file>img/editor/tree.svg</file>
+        <file>img/editor/undo.svg</file>
+        <file>img/editor/water.svg</file>
+    </qresource>
+</RCC>

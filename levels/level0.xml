@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<level>
+  <settings>
+    <size width="503" height="420"/>
+    <time seconds="120"/>
+  </settings>
+  <tiles>
+		<fence xStart="20" yStart="7" xEnd="107" yEnd="7"/>
+		<fence xStart="20" yStart="7" xEnd="20" yEnd="32"/>
+		<fence xStart="20" yStart="32" xEnd="95" yEnd="32"/>
+		<fence xStart="95" yStart="32" xEnd="95" yEnd="32"/>
+		<fence xStart="95" yStart="32" xEnd="95" yEnd="53"/>
+		<fence xStart="16" yStart="53" xEnd="95" yEnd="53"/>
+		<fence xStart="127" yStart="7" xEnd="127" yEnd="55"/>
+		<fence xStart="175" yStart="5" xEnd="175" yEnd="60"/>
+		<fence xStart="127" yStart="33" xEnd="176" yEnd="33"/>
+		<fence xStart="203" yStart="4" xEnd="203" yEnd="63"/>
+		<fence xStart="203" yStart="4" xEnd="235" yEnd="4"/>
+		<fence xStart="203" yStart="34" xEnd="235" yEnd="34"/>
+		<fence xStart="203" yStart="63" xEnd="235" yEnd="63"/>
+		<fence xStart="256" yStart="4" xEnd="256" yEnd="64"/>
+		<fence xStart="256" yStart="63" xEnd="282" yEnd="63"/>
+		<fence xStart="255" yStart="34" xEnd="285" yEnd="34"/>
+		<fence xStart="256" yStart="4" xEnd="285" yEnd="4"/>
+		<fence xStart="308" yStart="4" xEnd="308" yEnd="65"/>
+		<fence xStart="307" yStart="4" xEnd="331" yEnd="4"/>
+		<fence xStart="307" yStart="34" xEnd="331" yEnd="34"/>
+		<fence xStart="331" yStart="4" xEnd="331" yEnd="34"/>
+		<fence xStart="72" yStart="200" xEnd="72" yEnd="273"/>
+		<fence xStart="72" yStart="200" xEnd="105" yEnd="200"/>
+		<fence xStart="105" yStart="200" xEnd="105" yEnd="226"/>
+		<fence xStart="105" yStart="226" xEnd="118" yEnd="226"/>
+		<fence xStart="118" yStart="226" xEnd="118" yEnd="275"/>
+		<fence xStart="72" yStart="273" xEnd="118" yEnd="273"/>
+		<fence xStart="135" yStart="201" xEnd="135" yEnd="273"/>
+		<fence xStart="135" yStart="201" xEnd="175" yEnd="201"/>
+		<fence xStart="175" yStart="201" xEnd="175" yEnd="271"/>
+		<fence xStart="135" yStart="271" xEnd="175" yEnd="271"/>
+		<fence xStart="196" yStart="201" xEnd="196" yEnd="275"/>
+		<fence xStart="198" yStart="201" xEnd="239" yEnd="201"/>
+		<fence xStart="196" yStart="275" xEnd="237" yEnd="275"/>
+		<fence xStart="237" yStart="243" xEnd="237" yEnd="274"/>
+		<fence xStart="212" yStart="243" xEnd="237" yEnd="243"/>
+    <exit x="0" y="99" style="1"/>
+    <exit x="0" y="201" style="1"/>
+    <exit x="483" y="107" style="1"/>
+    <exit x="477" y="204" style="1"/>
+  </tiles>
+  <characters>
+    <dog x="203" y="120"/>
+		<sheep x="183" y="93"/>
+		<sheep x="135" y="95"/>
+		<sheep x="102" y="130"/>
+		<sheep x="140" y="174"/>
+		<sheep x="181" y="182"/>
+		<sheep x="241" y="179"/>
+		<sheep x="285" y="142"/>
+		<sheep x="247" y="97"/>
+  </characters>
+</level>

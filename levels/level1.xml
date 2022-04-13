@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<level>
+  <settings>
+    <size width="364" height="234"/>
+    <time seconds="120"/>
+  </settings>
+  <tiles>
+    <fence xStart="4" yStart="4" xEnd="338" yEnd="4"/>
+    <fence xStart="4" yStart="4" xEnd="4" yEnd="232"/>
+    <fence xStart="4" yStart="232" xEnd="334" yEnd="232"/>
+    <fence xStart="334" yStart="118" xEnd="334" yEnd="232"/>
+    <fence xStart="334" yStart="118" xEnd="381" yEnd="118"/>
+    <fence xStart="381" yStart="63" xEnd="381" yEnd="117"/>
+    <fence xStart="338" yStart="4" xEnd="383" yEnd="4"/>
+    <fence xStart="383" yStart="4" xEnd="383" yEnd="63"/>
+    <bush x="3" y="10" style="1"/>
+    <bush x="333" y="71" style="1"/>
+    <bush x="376" y="193" style="1"/>
+    <bush x="6" y="122" style="1"/>
+    <bush x="139" y="12" style="1"/>
+    <bush x="135" y="65" style="1"/>
+    <bush x="138" y="112" style="1"/>
+    <tree x="322" y="114" style="1"/>
+    <tree x="116" y="72" style="1"/>
+    <tree x="126" y="23" style="1"/>
+    <exit x="19" y="162" style="1"/>
+  </tiles>
+  <characters>
+    <dog x="357" y="47"/>
+    <sheep x="227" y="49"/>
+  </characters>
+</level>

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="30"
+   height="30"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.1 "
+   sodipodi:docname="sheepSleepBox.svg"
+   inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\sheepSleepBox.png"
+   inkscape:export-xdpi="89.989998"
+   inkscape:export-ydpi="89.989998">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3851">
+      <stop
+         style="stop-color:#ffe93e;stop-opacity:1;"
+         offset="0"
+         id="stop3853" />
+      <stop
+         style="stop-color:#f72300;stop-opacity:1;"
+         offset="1"
+         id="stop3855" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="7.9195959"
+     inkscape:cx="18.780139"
+     inkscape:cy="24.757713"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1680"
+     inkscape:window-height="998"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-183.37774,-533.74531)"
+     style="display:inline">
+    <path
+       sodipodi:type="arc"
+       style="fill:#80b3ff;fill-opacity:1;fill-rule:nonzero;stroke:#5599ff;stroke-width:1.55446434;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="path2985"
+       sodipodi:cx="-14.776786"
+       sodipodi:cy="-6.5388851"
+       sodipodi:rx="15.044643"
+       sodipodi:ry="15.044643"
+       d="m 0.26785755,-6.5388851 c 0,8.3089271 -6.73571625,15.0446434 -15.04464355,15.0446434 -8.308927,0 -15.044643,-6.7357163 -15.044643,-15.0446434 0,-8.3089269 6.735716,-15.0446439 15.044643,-15.0446439 8.3089273,0 15.04464355,6.735717 15.04464355,15.0446439 z"
+       transform="matrix(0.94805448,0,0,0.94805448,212.38694,554.94453)" />
+    <text
+       xml:space="preserve"
+       style="font-size:15.95938587px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.53952831;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+       x="-260.18036"
+       y="533.43384"
+       id="text3915"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70734929,-0.70686419,0.70686419,0.70734929,0,0)"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\sheepSleepBox.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3917"
+         x="-260.18036"
+         y="533.43384"
+         style="stroke-width:0.53952831">Z</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:11.90221786px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.53952831;display:inline;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+       x="-249.02113"
+       y="532.00787"
+       id="text3915-9"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70734929,-0.70686419,0.70686419,0.70734929,0,0)"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\sheepSleepBox.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3917-6"
+         x="-249.02113"
+         y="532.00787"
+         style="stroke-width:0.53952831">Z</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:8.63394356px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:0.53952831;display:inline;font-family:Aharoni;-inkscape-font-specification:Aharoni Bold"
+       x="-239.98546"
+       y="531.06464"
+       id="text3915-9-0"
+       sodipodi:linespacing="125%"
+       transform="matrix(0.70734929,-0.70686419,0.70686419,0.70734929,0,0)"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\sheepSleepBox.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan3917-6-9"
+         x="-239.98546"
+         y="531.06464"
+         style="stroke-width:0.53952831">Z</tspan></text>
+  </g>
+</svg>

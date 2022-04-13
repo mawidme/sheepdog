@@ -1,0 +1,269 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="30"
+   height="30"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.1 "
+   sodipodi:docname="timeBonusBox.svg"
+   inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+   inkscape:export-xdpi="89.989998"
+   inkscape:export-ydpi="89.989998">
+  <defs
+     id="defs4">
+    <linearGradient
+       id="linearGradient3851">
+      <stop
+         style="stop-color:#ffe93e;stop-opacity:1;"
+         offset="0"
+         id="stop3853" />
+      <stop
+         style="stop-color:#f72300;stop-opacity:1;"
+         offset="1"
+         id="stop3855" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="11.2"
+     inkscape:cx="-0.32265471"
+     inkscape:cy="12.112655"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1680"
+     inkscape:window-height="998"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-233.1034,-526.04839)"
+     style="display:inline">
+    <path
+       sodipodi:type="arc"
+       style="fill:#a05a2c;fill-opacity:1;fill-rule:nonzero;stroke:#784421;stroke-width:1.55446434000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="path2985"
+       sodipodi:cx="-14.776786"
+       sodipodi:cy="-6.5388851"
+       sodipodi:rx="15.044643"
+       sodipodi:ry="15.044643"
+       d="m 0.26785755,-6.5388851 a 15.044643,15.044643 0 1 1 -30.08928655,0 15.044643,15.044643 0 1 1 30.08928655,0 z"
+       transform="matrix(0.94805448,0,0,0.94805448,262.20224,547.33655)" />
+    <rect
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.35948208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="rect4226-4"
+       width="1.4451339"
+       height="1.3006204"
+       x="249.75717"
+       y="534.89221"
+       transform="matrix(0.99998066,-0.00621912,0.00621912,0.99998066,0,0)"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <rect
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.35948208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="rect4226"
+       width="2.4520683"
+       height="2.2068615"
+       x="249.27719"
+       y="532.66968"
+       transform="matrix(0.99998066,-0.00621912,0.00621912,0.99998066,0,0)"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="path3011"
+       sodipodi:cx="53.839287"
+       sodipodi:cy="3.4378188"
+       sodipodi:rx="7.6785712"
+       sodipodi:ry="7.6785712"
+       d="m 61.517858,3.4378188 a 7.6785712,7.6785712 0 1 1 -15.357142,0 7.6785712,7.6785712 0 1 1 15.357142,0 z"
+       transform="matrix(0.86492612,0,0,0.86492612,207.20135,538.09611)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.35948208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 253.80309,535.15808 0,1.40398"
+       id="path4267"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.35948208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 253.80309,546.09286 0,1.40397"
+       id="path4267-6"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.35948208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 248.99719,541.44897 -1.40396,0"
+       id="path4267-1"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.35948208;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 259.93197,541.44897 -1.40397,0"
+       id="path4267-1-2"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.25163746;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 256.97654,535.55979 -0.66484,1.23657"
+       id="path4267-4"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.25163746;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 251.41323,546.02531 -0.66486,1.23657"
+       id="path4267-6-4"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.25163746;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 249.18688,539.01735 -1.23657,-0.66486"
+       id="path4267-1-27"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.25163746;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 259.6203,544.58066 -1.23657,-0.66486"
+       id="path4267-1-2-2"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.25163746;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 259.54292,538.05317 -1.21586,0.70198"
+       id="path4267-9"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.25163746;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 249.23863,544.0341 -1.21587,0.70199"
+       id="path4267-6-1"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.25163746;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 251.05001,536.90819 -0.70199,-1.21587"
+       id="path4267-1-4"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.25163746;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 256.99883,547.18039 -0.70198,-1.21586"
+       id="path4267-1-2-29"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2.21935868;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 236.26669,541.09424 7.72812,0"
+       id="path4352"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2.21935868;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 240.13075,537.18063 0,7.72812"
+       id="path4352-7"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       sodipodi:type="arc"
+       style="fill:none;stroke:#000000;stroke-width:4.91546965;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       id="path4206-2-5"
+       sodipodi:cx="-38.890873"
+       sodipodi:cy="34.179188"
+       sodipodi:rx="22.475895"
+       sodipodi:ry="22.475895"
+       d="m -16.414978,34.179188 a 22.475895,22.475895 0 1 1 -44.95179,0 22.475895,22.475895 0 1 1 44.95179,0 z"
+       transform="matrix(0.29253121,0,0,0.29253121,265.18772,531.34534)"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       style="fill:#d40000;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       d="m 257.79248,541.39224 -3.9609,-0.002 0.0727,-4.16935 c 2.22555,0.0782 3.96633,1.94568 3.88816,4.17121 z"
+       id="path4414"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cccc"
+       inkscape:transform-center-x="-2.0552862"
+       inkscape:transform-center-y="-2.0812157"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:0.69999999;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path4412"
+       sodipodi:cx="28.348215"
+       sodipodi:cy="18.671257"
+       sodipodi:rx="1.6517857"
+       sodipodi:ry="1.6517857"
+       d="m 30.000001,18.671257 a 1.6517857,1.6517857 0 1 1 -3.303572,0 1.6517857,1.6517857 0 1 1 3.303572,0 z"
+       transform="matrix(0.20642254,0,0,0.20642254,247.98152,537.49848)"
+       inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\timeBonusBox.png"
+       inkscape:export-xdpi="89.989998"
+       inkscape:export-ydpi="89.989998" />
+  </g>
+</svg>

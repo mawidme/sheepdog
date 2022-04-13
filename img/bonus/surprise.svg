@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="30"
+   height="30"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.1 "
+   sodipodi:docname="surprise.svg"
+   inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\bonus\surprise.png"
+   inkscape:export-xdpi="89.99968"
+   inkscape:export-ydpi="89.99968">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="15.839192"
+     inkscape:cx="29.081257"
+     inkscape:cy="11.903293"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:window-width="1680"
+     inkscape:window-height="998"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-195.76156,-802.98226)">
+    <path
+       sodipodi:type="arc"
+       style="fill:#0000ff;fill-opacity:1;fill-rule:nonzero;stroke:#000080;stroke-width:1.13275731;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       id="path2985"
+       sodipodi:cx="-26.169264"
+       sodipodi:cy="14.028361"
+       sodipodi:rx="10.827573"
+       sodipodi:ry="10.827573"
+       d="m -15.341691,14.028361 c 0,5.979904 -4.847669,10.827573 -10.827573,10.827573 -5.979903,0 -10.827573,-4.847669 -10.827573,-10.827573 0,-5.979903 4.84767,-10.8275725 10.827573,-10.8275725 5.979904,0 10.827573,4.8476695 10.827573,10.8275725 z"
+       transform="matrix(1.316488,0,0,1.316488,245.21308,799.51409)" />
+    <g
+       transform="matrix(1.5015469,0,0,1.1678038,-63.474413,-270.02645)"
+       style="font-size:35.43587494px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#ffffff;fill-opacity:1;stroke:none;font-family:Narkisim;-inkscape-font-specification:Narkisim"
+       id="text2987">
+      <path
+         d="m 187.25803,925.64699 c -1e-5,1.24581 -0.38067,2.30704 -1.14198,3.18369 -0.47295,0.48449 -0.95165,0.97473 -1.43612,1.47073 -0.53062,0.5883 -0.79593,1.15929 -0.79592,1.71296 -1e-5,0.50756 0.24799,0.95743 0.74401,1.34961 -0.1961,0.46141 -1.02086,1.25157 -2.47428,2.37047 l -0.60559,-0.13842 c -0.65751,-0.64596 -0.97473,-1.49379 -0.95165,-2.5435 0.0115,-0.55367 0.25377,-1.1535 0.72671,-1.79947 0.19609,-0.2653 0.68634,-0.81322 1.47073,-1.64376 0.87666,-0.9228 1.31499,-1.74756 1.315,-2.47428 -1e-5,-1.53416 -0.88821,-2.30124 -2.66461,-2.30126 -0.6229,2e-5 -1.17659,0.0923 -1.66106,0.27685 -0.34605,0.13843 -0.69211,0.28262 -1.03816,0.43256 l -0.44987,-0.39796 c 0.16149,-0.3345 0.40661,-0.84781 0.73537,-1.53994 0.32875,-0.69209 0.57963,-1.2054 0.75266,-1.53993 0.93434,-0.28836 1.85715,-0.43255 2.76843,-0.43257 3.13754,2e-5 4.70632,1.33809 4.70633,4.01422 z m -1.98981,13.32306 -0.0692,0.57099 -2.16283,2.33586 -0.41527,0 -2.63,-2.16284 0,-0.43256 2.30125,-2.43968 0.43257,0 z"
+         id="path2992"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+</svg>
