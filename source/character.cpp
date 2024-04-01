@@ -8,7 +8,7 @@
 
 #include <cmath>
 
-#include <QFile>
+#include <QtCore/QFile>
 
 Character::Character() : p_img(NULL),
                          p_pngImg(NULL),
@@ -484,7 +484,7 @@ bool Character::checkCollisions()
       changeSpeed(gNormalSheepSpeed);
       qreal remainingWalkDist = m_speedVector.length();
 
-      // Look for way out in steps of 90°. If escaping direction is found, walk that way
+      // Look for way out in steps of 90ï¿½. If escaping direction is found, walk that way
       // plus a random number
 
       int tmpAngle = floor(m_angle / 90.0) * 90;
@@ -498,7 +498,7 @@ bool Character::checkCollisions()
         tmpAngle = (tmpAngle + 90) % 360;
       }
 
-      // Number of 90°-directions resulting in a collision.
+      // Number of 90ï¿½-directions resulting in a collision.
       int numColDirs = 0;
       bool colDir[kNumWalkDirections];
       for(unsigned int i=0; i<kNumWalkDirections; i++)
@@ -517,7 +517,7 @@ bool Character::checkCollisions()
       qreal newAngle = 0.0;
       if(numColDirs == 1)
       {
-        // If next direction (+90°) leads to a collision, subtract a random number. Otherwise, add a
+        // If next direction (+90ï¿½) leads to a collision, subtract a random number. Otherwise, add a
         // random number.
         if(colDir[(firstNoColDir + 1) % 4])
           newAngle = walkVectorsToCheck[firstNoColDir].angle() - (getRandom(0, 45));
@@ -528,19 +528,19 @@ bool Character::checkCollisions()
       {
         if(!colDir[(firstNoColDir + 1) % 4] || !colDir[(firstNoColDir + 3) % 4])
         {
-          // Directions with no collision are adjacent (i.e. differ by 90°) and next 90° step angle
+          // Directions with no collision are adjacent (i.e. differ by 90ï¿½) and next 90ï¿½ step angle
           // with no collision is in positive direction.
           newAngle = walkVectorsToCheck[firstNoColDir].angle() + (getRandom(0, 45));
         }
         else if(!colDir[(firstNoColDir + 3) % 4])
         {
-          // Directions with no collision are adjacent (i.e. differ by 90°) and next 90° step angle
+          // Directions with no collision are adjacent (i.e. differ by 90ï¿½) and next 90ï¿½ step angle
           // with no collision is in negative direction.
           newAngle = walkVectorsToCheck[firstNoColDir].angle() - (getRandom(0, 45));
         }
         else
         {
-          // Directions with no collision differ by 180°,
+          // Directions with no collision differ by 180ï¿½,
           // make a random choice between the two remaining directions.
           if(getRandom(0, 1) == 0)
             newAngle = walkVectorsToCheck[firstNoColDir].angle();

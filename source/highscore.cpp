@@ -4,34 +4,34 @@ public:
   bool m_currentlyDisplayingScores;
 
 private:
-	m_clickClip:MovieClip;
+    MovieClip m_clickClip;
 
-	m_highScoreText:TextField;
-	m_highScoreTextFormat:TextFormat;
-	m_scoreTitleText:TextField;
-	m_scoreTitleTextFormat:TextFormat;
+    TextField m_highScoreText;
+    TextFormat m_highScoreTextFormat;
+    TextField m_scoreTitleText;
+    TextFormat m_scoreTitleTextFormat;
 
-	m_score:uint;
-	m_scoreIndex:uint;
-	m_newScoreText:TextField;
-	m_newScoreTextFormat:TextFormat;
-	m_parentClip:MovieClip;
+    uint m_score;
+    uint m_scoreIndex;
+    TextField m_newScoreText;
+    TextFormat m_newScoreTextFormat;
+    MovieClip m_parentClip;
 
 	bool m_gameOver;
 
-	m_scoreArr:Array;
+    Array m_scoreArr;
 	bool m_scoresLoaded;
-	m_scoresLoader:URLLoader;
+    URLLoader m_scoresLoader;
 
-	m_nameArr:Array;
+    Array m_nameArr;
 	bool m_namesLoaded;
-	m_namesLoader:URLLoader;
+    URLLoader m_namesLoader;
 
-	m_afterFunction:Function;
+    Function m_afterFunction;
 
 	// different modes to decide what to do after loading scores
 	unsigned long int m_mode;
-	const enterNewScoreMode:uint = 1;
+	const uint enterNewScoreMode = 1;
 	const unsigned long int showScoresMode = 2;
 	
 	const QString newNameReplacer = "??? DEIN NAME ???";
@@ -41,7 +41,7 @@ private:
 	const unsigned long int windowHeight = 250;
 	const int yOffset = -80;
 
-	public function Highscore(quint32 parentClip:MovieClip, score=0)
+	public function Highscore(quint32 MovieClip parentClip, score=0)
 	{
 		m_score = score;
 		m_scoreIndex = 10;
@@ -54,7 +54,7 @@ private:
 		m_scoresLoaded = false;
 	}
 
-	public bool function tryToEnterNewHighscore(after:Function, gameover)
+	public bool function tryToEnterNewHighscore(Function after, gameover)
 	{
 		m_gameOver = gameover;
 		m_afterFunction = after;

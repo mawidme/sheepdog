@@ -3,8 +3,8 @@
 
 #include "types.hpp"
 
-#include <QGraphicsItem>
-#include <QPointF>
+#include <QtWidgets/QGraphicsItem>
+#include <QtCore/QPointF>
 
 
 class GameObject : public QGraphicsItem

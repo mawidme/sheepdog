@@ -1,9 +1,9 @@
 #ifndef BARK_WAVE_HPP_
 #define BARK_WAVE_HPP_
 
-#include <QPointF>
-#include <QGraphicsEllipseItem>
-#include <QGraphicsBlurEffect>
+#include <QtCore/QPointF>
+#include <QtWidgets/QGraphicsEllipseItem>
+#include <QtWidgets/QGraphicsBlurEffect>
 
 class BarkWave
 {

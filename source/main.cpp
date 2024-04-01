@@ -1,7 +1,7 @@
-#include <QtGui>
-#include <QApplication>
-#include <QMessageBox>
-#include <QDesktopWidget>
+#include <QtGui/QtGui>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QMessageBox>
+//#include <QDesktopWidget>
 
 #include "main_game.hpp"
 #include "utils.hpp"
@@ -15,7 +15,12 @@ int main(int argc, char *argv[])
     // seed random generator with current time in milliseconds
     srand(QTime::currentTime().msec());
 
+    //TODO: proper abstraction
+#ifdef MOBILE_VERSION
+    QSize screenRect = app.screens()[0]->size();
+#else
     QRect screenRect = app.desktop()->availableGeometry();
+#endif
     qDebug("screen size: %d x %d", screenRect.width(), screenRect.height());
 
     // Screen rotation may be in portrait mode when starting, so set gScreenWidth to the
@@ -49,7 +54,7 @@ int main(int argc, char *argv[])
     setGlobals(true);
 
     // seed random generator with current time
-    qsrand(QTime::currentTime().msec());
+    srand(QTime::currentTime().msec());
 
     MainGame game;
     if(!game.init())

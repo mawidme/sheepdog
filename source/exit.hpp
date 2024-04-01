@@ -4,7 +4,7 @@
 #include "level_element.hpp"
 #include "level_types.hpp"
 
-#include <QGraphicsPixmapItem>
+#include <QtWidgets/QGraphicsPixmapItem>
 
 class ExitElem : public LevelElement
 {

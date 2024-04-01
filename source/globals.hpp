@@ -4,15 +4,14 @@
 #include "level_types.hpp"
 #include "types.hpp"
 
-#include <QTimer>
-#include <QtGlobal>
-#include <QPixmap>
-#include <QPen>
-#include <QBrush>
-#include <QSound>
-#include <QFont>
-#include <QScrollBar>
-#include <QtSvg/QGraphicsSvgItem>
+#include <QtCore/QTimer>
+#include <QtCore/QtGlobal>
+#include <QtGui/QPixmap>
+#include <QtGui/QPen>
+#include <QtGui/QBrush>
+#include <QtGui/QFont>
+#include <QtWidgets/QScrollBar>
+#include <QtSvgWidgets/QGraphicsSvgItem>
 
 #ifdef __ANDROID__
 #define QT_NO_SOUND
@@ -23,6 +22,7 @@ static const long int kDefaultWindowWidth = 800;
 static const long int kDefaultWindowHeight = 480;
 
 #elif defined(__symbian__) || defined(__SYMBIAN32__)
+#include <QtMultimedia/QSound>
 #define QT_SOUND
 #define SYMBIAN_MOBILE_VERSION
 #define MOBILE_VERSION
@@ -31,6 +31,7 @@ static const long int kDefaultWindowWidth = 640;
 static const long int kDefaultWindowHeight = 360;
 
 #else
+#include <QtMultimedia/QSound>
 #define QT_SOUND
 #undef MOBILE_VERSION
 static const qreal kDefaultLevelZoomFactor = 1.0;
@@ -274,8 +275,8 @@ const qreal kMinWaterSize = 20.0;
 #endif
 
 #ifdef ANDROID_MOBILE_VERSION
-#define GET_USER_LEVEL_FILE(x) "/sdcard/sheepdog/levels/"x
-#define GET_SD_DIR(x)         "/sdcard/"x
+#define GET_USER_LEVEL_FILE(x) "/sdcard/sheepdog/levels/" x
+#define GET_SD_DIR(x)         "/sdcard/" x
 
 #elif defined(SYMBIAN_MOBILE_VERSION)
 #define GET_USER_LEVEL_FILE(x) "E:/sheepdog/levels/"x

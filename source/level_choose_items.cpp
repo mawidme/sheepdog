@@ -3,8 +3,8 @@
 #include "utils.hpp"
 #include "mygraphicsscene.hpp"
 
-#include <QTextDocument>
-#include <QPen>
+#include <QtGui/QTextDocument>
+#include <QtGui/QPen>
 
 QColor kBackColor(100, 100, 100, 180);
 QColor kFrontColor(60, 60, 60, 180);

@@ -5,7 +5,7 @@
 
 #include "game_object.hpp"
 
-#include <QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 
 class LevelElement : public GameObject
 {

@@ -3,10 +3,9 @@
 
 #include "mygraphicsscene.hpp"
 
-#include <QGraphicsView>
-
-#include <QPinchGesture>
-#include <QPanGesture>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QPinchGesture>
+#include <QtWidgets/QPanGesture>
 
 class MyGraphicsView : public QGraphicsView
 {

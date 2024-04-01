@@ -20,8 +20,11 @@
 
 #include "mygraphicsview.hpp"
 
+#if defined(QT_SOUND)
 #include <QSound>
-#include <QTimer>
+#endif
+
+#include <QtCore/QTimer>
 
 class Level : public QGraphicsItem
 {

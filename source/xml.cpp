@@ -9,9 +9,9 @@
 #include "tree.hpp"
 #include "deco.hpp"
 
-#include <QXmlStreamWriter>
-#include <QDir>
-#include <QMessageBox>
+#include <QtCore/QXmlStreamWriter>
+#include <QtCore/QDir>
+#include <QtWidgets/QMessageBox>
 
 Xml::Xml()
 {

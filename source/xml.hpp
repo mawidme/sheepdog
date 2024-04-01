@@ -3,8 +3,8 @@
 
 #include "level_types.hpp"
 
-#include <QtXml/QXmlDefaultHandler>
-#include <QtXml/QXmlAttributes>
+#include <QtCore5Compat/QXmlDefaultHandler>
+#include <QtCore5Compat/QXmlAttributes>
 
 class LevelSettings
 {

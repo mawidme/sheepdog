@@ -5,9 +5,12 @@
 
 #include "mygraphicsscene.hpp"
 
-#include <QGraphicsView>
-#include <QSound>
+#include <QtWidgets/QGraphicsView>
 #include <QtSvg/QSvgRenderer>
+
+#if defined(QT_SOUND)
+#include <QSound>
+#endif
 
 class MainGame
 {

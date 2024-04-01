@@ -2,7 +2,7 @@
 #include "globals.hpp"
 #include "utils.hpp"
 
-#include <QTextDocument>
+#include <QtGui/QTextDocument>
 
 static const char *kEditorImageNames[NumEditTypes] = { "img/editor/fence.svg",
                                                        "img/editor/bush.svg",

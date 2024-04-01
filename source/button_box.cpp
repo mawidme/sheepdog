@@ -2,7 +2,7 @@
 
 #include "utils.hpp"
 
-#include <QTextDocument>
+#include <QtGui/QTextDocument>
 
 // ===========================================================================
 // BUTTON

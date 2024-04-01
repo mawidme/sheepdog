@@ -1,7 +1,7 @@
 #ifndef INFOS_ITEM_HPP_
 #define INFOS_ITEM_HPP_
 
-#include <QGraphicsItem>
+#include <QtWidgets/QGraphicsItem>
 
 class InfoItems : public QGraphicsItem
 {

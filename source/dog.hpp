@@ -5,7 +5,9 @@
 #include "character.hpp"
 #include "sheep.hpp"
 
+#if defined(QT_SOUND)
 #include <QSound>
+#endif
 
 class Dog : public Character
 {

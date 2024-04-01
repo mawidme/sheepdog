@@ -2,9 +2,9 @@
 
 #include "utils.hpp"
 
-#include <QKeyEvent>
-#include <QTime>
-#include <qmath.h>
+#include <QtGui/QKeyEvent>
+#include <QtCore/QTime>
+#include <QtCore/qmath.h>
 
 MainGame::MainGame()
 {

@@ -4,7 +4,7 @@
 #include "level_element.hpp"
 #include "level_types.hpp"
 
-#include <QPointF>
+#include <QtCore/QPointF>
 
 static const qreal kPenWidth = 2.0;
 

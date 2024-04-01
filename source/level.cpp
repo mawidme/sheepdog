@@ -15,7 +15,7 @@
 #include "exit.hpp"
 #include "water.hpp"
 
-#include <QMessageBox>
+#include <QtWidgets/QMessageBox>
 
 #if defined(USE_OPENGL) && !defined(QT_NO_OPENGL)
 #include <QtOpenGL/QGLWidget>
@@ -178,9 +178,7 @@ void Level::setupSceneAndView()
                        (p_scene->height() - gWindowHeight) / 2,
                        gWindowWidth, gWindowHeight);
 
-  if(gGraphicQuality >= VeryHighQuality)
-    p_view->setRenderHint(QPainter::HighQualityAntialiasing);
-  else if(gGraphicQuality >= HighQuality)
+  if(gGraphicQuality >= HighQuality)
     p_view->setRenderHint(QPainter::Antialiasing);
   else if(gGraphicQuality >= MedQuality)
     p_view->setRenderHint(QPainter::SmoothPixmapTransform);
@@ -1525,7 +1523,7 @@ void Level::checkDogInView()
   if(pDog->getSpeed() > kZeroSpeedThreshold)
   {
     // TODO: this calculation is not perfect:
-    // changing the walking direction by 180° near the border causes a small jump in scrolling.
+    // changing the walking direction by 180ï¿½ near the border causes a small jump in scrolling.
     // this is due to the change in the character's coordinate system when turning.
 
     QPointF dogViewCoord = pDog->absMidPoint()*gLevelZoomFactor + scenePos() - gSceneToViewOffset;

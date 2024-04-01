@@ -1,9 +1,9 @@
 #include "utils.hpp"
 #include "level.hpp"
 
-#include <QLineF>
-#include <QFile>
-#include <QMessageBox>
+#include <QtCore/QLineF>
+#include <QtCore/QFile>
+#include <QtWidgets/QMessageBox>
 #include <QtSvg/QSvgRenderer>
 
 #include <cmath>
@@ -79,7 +79,7 @@ long unsigned int getRandom(long unsigned int minimum, long unsigned int maximum
     return 0;
   }
 
-  return (qrand() % (maximum - minimum + 1)) + minimum;
+  return (rand() % (maximum - minimum + 1)) + minimum;
 }
 
 qreal getRandomF(qreal minimum, qreal maximum)
@@ -90,7 +90,7 @@ qreal getRandomF(qreal minimum, qreal maximum)
     return 0;
   }
 
-  return ((qreal)qrand()) / (qreal)(RAND_MAX) * (maximum - minimum) + minimum;
+  return ((qreal)rand()) / (qreal)(RAND_MAX) * (maximum - minimum) + minimum;
 }
 
 QPixmap* loadPngImage(const QString filename)

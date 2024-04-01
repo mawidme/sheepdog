@@ -6,10 +6,10 @@
 #include "utils.hpp"
 #include "button_box.hpp"
 
-#include <QGraphicsScene>
-#include <QGraphicsSceneMouseEvent>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsSceneMouseEvent>
 
-#include <QKeyEvent>
+#include <QtGui/QKeyEvent>
 
 class MyGraphicsScene : public QGraphicsScene
 {

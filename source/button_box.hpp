@@ -4,8 +4,8 @@
 #include "globals.hpp"
 #include "utils.hpp"
 
-#include <QGraphicsItem>
-#include <QtSvg/QGraphicsSvgItem>
+#include <QtWidgets/QGraphicsItem>
+#include <QtSvgWidgets/QGraphicsSvgItem>
 
 struct ButtonContext
 {

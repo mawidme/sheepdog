@@ -3,8 +3,8 @@
 
 #include "level_types.hpp"
 
-#include <QGraphicsItem>
-#include <QtSvg/QGraphicsSvgItem>
+#include <QtWidgets/QGraphicsItem>
+#include <QtSvgWidgets/QGraphicsSvgItem>
 
 class EditorItems : public QGraphicsItem
 {

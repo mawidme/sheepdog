@@ -4,7 +4,7 @@
 
 #include "dog.hpp"
 
-#include <QTextDocument>
+#include <QtGui/QTextDocument>
 
 
 InfoItems::InfoItems() : m_initialized(false)

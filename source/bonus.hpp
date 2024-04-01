@@ -4,10 +4,10 @@
 #include "mygraphicsscene.hpp"
 #include "mygraphicsview.hpp"
 
-#include <QGraphicsScene>
-#include <QGraphicsPixmapItem>
-#include <QtSvg/QGraphicsSvgItem>
-#include <QGraphicsBlurEffect>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsPixmapItem>
+#include <QtSvgWidgets/QGraphicsSvgItem>
+#include <QtWidgets/QGraphicsBlurEffect>
 
 //TODO: SuperDogMode (Dog: setOpacity(0.5), setZValue(<top>))
 enum BonusMode

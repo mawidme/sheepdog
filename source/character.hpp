@@ -6,8 +6,8 @@
 
 #include "game_object.hpp"
 
-#include <QGraphicsItem>
-#include <QtSvg/QGraphicsSvgItem>
+#include <QtWidgets/QGraphicsItem>
+#include <QtSvgWidgets/QGraphicsSvgItem>
 
 
 class Character : public GameObject//!!!, public QGraphicsItem

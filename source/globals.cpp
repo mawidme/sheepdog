@@ -2,7 +2,7 @@
 
 #include "level.hpp"
 
-#include <Qt>
+#include <QtCore/Qt>
 
 
 // TODO: free globals!

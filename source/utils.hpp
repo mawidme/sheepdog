@@ -5,8 +5,8 @@
 
 #include "globals.hpp"
 
-#include <QPointF>
-#include <QString>
+#include <QtCore/QPointF>
+#include <QtCore/QString>
 
 qreal distBetweenPoints(QPointF point1, QPointF point2);
 unsigned long int max(unsigned long int a, unsigned long int b);
