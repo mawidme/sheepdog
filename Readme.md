@@ -17,6 +17,8 @@
       #endif
     - in case this fails due to "unknown argument: '-fno-keep-inline-dllexport'": comment argument in qmake.conf resp. Makefile (use file search)
 - configure qt6
+  - https://wiki.qt.io/Building_Qt_6_from_Git
+  - https://doc.qt.io/qt-6.5/android-building.html
   - open console: x64 Native Tools Command Prompt for VS 2022
   - mkdir c:\qt\qt6-windows-build
   - cd c:\qt\qt6-windows-build
