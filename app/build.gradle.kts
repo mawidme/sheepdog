@@ -15,6 +15,17 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        ndk {
+//            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
+//            abiFilters += listOf("armeabi-v7a", "arm64-v8a", "x86_64")
+//            abiFilters += "arm64-v8a"
+            abiFilters += "x86_64"
+        }
+        externalNativeBuild {
+            cmake {
+                arguments += "-DANDROID_STL=c++_shared"
+            }
+        }
     }
 
     buildTypes {
@@ -50,6 +61,7 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.11.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
+    //implementation(files("C:\\Qt\\qt6-android-x86_64\\jar\\Qt6Android.jar"))
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.1.5")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
