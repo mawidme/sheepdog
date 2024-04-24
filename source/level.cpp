@@ -100,13 +100,13 @@ void Level::clear()
     // reset scene's inside parameters
     p_scene->reset();
 
-    qDebug("number of level elements after reset: %d", p_scene->items().size());
+    qDebug("number of level elements after reset: %lld", p_scene->items().size());
   }
 }
 
 void Level::removeGameObjects()
 {
-  qDebug("removing %d level element(s)...", gLevelElementList.size());
+  qDebug("removing %lld level element(s)...", gLevelElementList.size());
   while(!gLevelElementList.isEmpty())
   {
     LevelElement *p_element = gLevelElementList.front();
@@ -114,7 +114,7 @@ void Level::removeGameObjects()
     delete p_element;
   }
 
-  qDebug("removing %d dog(s)...", gDogList.size());
+  qDebug("removing %lld dog(s)...", gDogList.size());
   while(!gDogList.isEmpty())
   {
     Dog *p_dog = (Dog*)(gDogList.front());
@@ -122,7 +122,7 @@ void Level::removeGameObjects()
     delete p_dog;
   }
 
-  qDebug("removing %d sheep...", gSheepList.size());
+  qDebug("removing %lld sheep...", gSheepList.size());
   while(!gSheepList.isEmpty())
   {
     Sheep *p_sheep = (Sheep*)(gSheepList.front());
@@ -404,7 +404,6 @@ void Level::editClickLevel(QPointF levelPoint)
     }
   }
 
-  QSizeF imgSize;
   switch(gEditMode)
   {
     case FenceEdit:
@@ -1182,7 +1181,7 @@ void Level::addItemsToScene()
   }
   */
 
-  qDebug("adding %d level elements...", gLevelElementList.size());
+  qDebug("adding %lld level elements...", gLevelElementList.size());
 
   // ------------------------------------------------------------------------
   // 1) add level elements (fences, bushes, ...) of layers 0 and 1 first
@@ -1202,13 +1201,13 @@ void Level::addItemsToScene()
   // -> Adding before the sheep to make sure Dog::advance() is called before Sheep::advance().
   // -> Like this, collision bools (for col.s between dog and sheep) are already set when entering
   //    Sheep::advance()
-  qDebug("adding %d dog(s)...", gDogList.size());
+  qDebug("adding %lld dog(s)...", gDogList.size());
   foreach(Character *pDog, gDogList)
     addObjToLevel(pDog);
 
   // ------------------------------------------------------------------------
   // 3) add sheep to stage
-  qDebug("adding %d sheep...", gSheepList.size());
+  qDebug("adding %lld sheep...", gSheepList.size());
   foreach(Character *pSheep, gSheepList)
   {
     ((Sheep*)pSheep)->init((void*)this);
@@ -1240,7 +1239,7 @@ void Level::addItemsToScene()
   // bonus stuff (invisible most of the time)
   p_bonus->setParentItem(this);
 
-  qDebug("number of scene items after adding: %d", p_scene->items().size());
+  qDebug("number of scene items after adding: %lld", p_scene->items().size());
 }
 
 void Level::addGuiElements()

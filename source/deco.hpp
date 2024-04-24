@@ -29,7 +29,7 @@ public:
   {
     m_topLeftPos = QPointF(sx, sy);
     m_bottomRightPos = QPointF(sx, sy); // fake calculation - currently not needed
-    qDebug("allocating deco 0x%x at (%ld, %ld)", (unsigned int)this, sx, sy);
+    qDebug("allocating deco 0x%llx at (%ld, %ld)", (unsigned long long)this, sx, sy);
 
     m_elemType = DecoLevelElement;
 

@@ -87,8 +87,8 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
 
   if(!m_inLevel)
   {
-    qDebug("Ignored \"%s\": Not in level!", name.toAscii().data());
-    return true;
+      qDebug("Ignored \"%s\": Not in level!", name.toStdString().c_str());
+      return true;
   }
 
   if(m_inSettings)
@@ -109,7 +109,7 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
           p_levelSettings->m_height = attrs.value( i ).toULong();
         else
         {
-          qDebug("Unknown size attribute: %s", attrs.localName( i ).toAscii().data());
+          qDebug("Unknown size attribute: %s", attrs.localName(i).toStdString().c_str());
           return false;
         }
       }
@@ -129,14 +129,14 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
         }
         else
         {
-          qDebug("Unknown time attribute: %s", attrs.localName( i ).toAscii().data());
+          qDebug("Unknown time attribute: %s", attrs.localName( i ).toStdString().c_str());
           return false;
         }
       }
     }
     else
     {
-      qDebug("Ignored '%s' in settings!", name.toAscii().data());
+      qDebug("Ignored '%s' in settings!", name.toStdString().c_str());
       return true;
     }
   }
@@ -166,7 +166,7 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
           yEnd = attrs.value( i ).toULong();
         else
         {
-          qDebug("Unknown hor fence attribute: %s", attrs.localName( i ).toAscii().data());
+          qDebug("Unknown hor fence attribute: %s", attrs.localName( i ).toStdString().c_str());
           return false;
         }
       }
@@ -207,7 +207,7 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
           style = attrs.value( i ).toULong();
         else
         {
-          qDebug("Unknown water attribute: %s", attrs.localName( i ).toAscii().data());
+          qDebug("Unknown water attribute: %s", attrs.localName( i ).toStdString().c_str());
           return false;
         }
       }
@@ -253,7 +253,7 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
           style = attrs.value( i ).toDouble();
         else
         {
-          qDebug("Unknown attribute: %s", attrs.localName( i ).toAscii().data());
+          qDebug("Unknown attribute: %s", attrs.localName( i ).toStdString().c_str());
           return false;
         }
       }
@@ -282,7 +282,7 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
     }
     else
     {
-      qDebug("Ignored '%s' in tiles!", name.toAscii().data());
+      qDebug("Ignored '%s' in tiles!", name.toStdString().c_str());
       return true;
     }
   }
@@ -305,7 +305,7 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
           y = attrs.value( i ).toULong();
         else
         {
-          qDebug("Unknown dog attribute: %s", attrs.localName( i ).toAscii().data());
+          qDebug("Unknown dog attribute: %s", attrs.localName( i ).toStdString().c_str());
           return false;
         }
       }
@@ -335,7 +335,7 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
           y = attrs.value( i ).toULong();
         else
         {
-          qDebug("Unknown sheep attribute: %s", attrs.localName( i ).toAscii().data());
+          qDebug("Unknown sheep attribute: %s", attrs.localName( i ).toStdString().c_str());
           return false;
         }
       }
@@ -350,13 +350,13 @@ bool Xml::startElement( const QString&, const QString&, const QString &name, con
     }
     else
     {
-      qDebug("Ignored '%s' in characters!", name.toAscii().data());
+      qDebug("Ignored '%s' in characters!", name.toStdString().c_str());
       return true;
     }
   }
   else
   {
-    qDebug("Ignored '%s' inside of nowhere!", name.toAscii().data());
+    qDebug("Ignored '%s' inside of nowhere!", name.toStdString().c_str());
     return true;
   }
 
@@ -608,8 +608,7 @@ int Xml::saveLevelXmlFile(const LevelSettings *pLevelSettings, long unsigned int
     return OpenFileError;
   }
 
-  //if(file.write(outputStr.toAscii().data(), outputStr.length()) == -1)
-  if(file.write(outputStr.toUtf8().data(), outputStr.length()) == -1)
+  if(file.write(outputStr.toStdString().data(), outputStr.length()) == -1)
   {
     QMessageBox msgBox;
     msgBox.setText(QString("error writing level xml file!"));
