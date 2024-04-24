@@ -146,7 +146,7 @@ bool MainGame::loadSounds()
   // LEVEL
   if(levelSounds == NULL)
   {
-    levelSounds = new QSound*[kNumLevelSounds];
+    levelSounds = new QSoundEffect*[kNumLevelSounds];
     for(int i=0; i<kNumLevelSounds; i++)
     {
       QString filename = QString("sfx/level%1.wav").arg(i+1);
@@ -165,7 +165,7 @@ bool MainGame::loadSounds()
   // SHEEP
   if(gSheepSound == NULL)
   {
-    gSheepSound = new QSound*[kNumSheepSounds];
+    gSheepSound = new QSoundEffect*[kNumSheepSounds];
     for(int i=0; i<kNumSheepSounds; i++)
     {
       QString filename = QString("sfx/sheep%1.wav").arg(i+1);
@@ -175,7 +175,7 @@ bool MainGame::loadSounds()
   }
   if(gSheepRescuedSound == NULL)
   {
-    gSheepRescuedSound = new QSound*[kNumSheepRescuedSounds];
+    gSheepRescuedSound = new QSoundEffect*[kNumSheepRescuedSounds];
     for(int i=0; i<kNumSheepRescuedSounds; i++)
     {
       QString filename = QString("sfx/rescue%1.wav").arg(i+1);
@@ -194,7 +194,7 @@ bool MainGame::loadSounds()
     return false;
   if(gBarkSounds == NULL)
   {
-    gBarkSounds = new QSound*[kNumBarkSounds];
+    gBarkSounds = new QSoundEffect*[kNumBarkSounds];
     for(int i=0; i<kNumBarkSounds; i++)
     {
       QString filename = QString("sfx/bark%1.wav").arg(i+1);

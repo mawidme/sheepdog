@@ -128,12 +128,19 @@ void loadSvgImage(QSvgRenderer **ppRenderer, const QString filename)
 }
 
 #ifndef QT_NO_SOUND
-QSound* loadSound(const QString filename)
+QSoundEffect* loadSound(const QString filename)
 {
-  qDebug("Loading sound from '%s'...", filename.toAscii().data());
+    const char* pFilename = filename.toStdString().c_str();
+    qDebug("Loading sound from '%s'...", pFilename);
 
-  QSound *p_sound = new QSound(filename);
-  return p_sound;
+    //TODO
+    // effect.setSource(QUrl::fromLocalFile("engine.wav"));
+    // effect.setLoopCount(QSoundEffect::Infinite);
+    // effect.setVolume(0.25f);
+    // effect.play();
+    QSoundEffect* pSound = new QSoundEffect();
+    pSound->setSource(QUrl::fromLocalFile(pFilename));
+    return pSound;
 }
 #endif // !QT_NO_SOUND
 
@@ -208,7 +215,6 @@ void setGlobals(bool first)
 
 
   // OTHER GLOBALS
-  gNumLevelElmtStyles[UnknownLevelElement] = 0;
   gNumLevelElmtStyles[DecoLevelElement]    = kNumDecoStyles;
   gNumLevelElmtStyles[ExitLevelElement]    = kNumExitStyles;
   gNumLevelElmtStyles[FenceLevelElement]   = kNumFenceStyles;

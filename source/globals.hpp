@@ -31,23 +31,13 @@ static const long int kDefaultWindowWidth = 640;
 static const long int kDefaultWindowHeight = 360;
 
 #else
-#include <QtMultimedia/QSound>
+#include <QtMultimedia/QSoundEffect>
 #define QT_SOUND
 #undef MOBILE_VERSION
 static const qreal kDefaultLevelZoomFactor = 1.0;
 static const long int kDefaultWindowWidth = 800;
 static const long int kDefaultWindowHeight = 480;
 #endif
-
-// the symbian compiler doesn't seem to like this define because of the ellipsis
-#ifndef SYMBIAN_MOBILE_VERSION
-// Activate for debugging output etc.
-#ifndef DEBUG_OUTPUT
-#define qDebug(...) \
-				do {}       \
-				while(0)
-#endif
-#endif //!SYMBIAN_MOBILE_VERSION
 
 // Define to show collision rectangles
 //#define SHOW_COL_RECTS
@@ -357,27 +347,27 @@ extern QBrush gFencePoleBrush;
 #ifndef QT_NO_SOUND
 // level
 static const int kNumSheepRescuedSounds = 2;
-extern QSound **gSheepRescuedSound;
+extern QSoundEffect **gSheepRescuedSound;
 
 static const int kNumLevelSounds = 4;
-extern QSound **levelSounds;
+extern QSoundEffect **levelSounds;
 
 static const int kNumMusicTracks = 4;
 
-extern QSound *gLevelDoneSound;
-extern QSound *gTryAgainSound;
-extern QSound *gGameOverSound;
+extern QSoundEffect *gLevelDoneSound;
+extern QSoundEffect *gTryAgainSound;
+extern QSoundEffect *gGameOverSound;
 
 // sheep
 static const int kNumSheepSounds = 4;
-extern QSound **gSheepSound;
+extern QSoundEffect **gSheepSound;
 
 // dog
-extern QSound *gBarkPowerCriticalSound;
-extern QSound *gBarkPowerFullSound;
+extern QSoundEffect *gBarkPowerCriticalSound;
+extern QSoundEffect *gBarkPowerFullSound;
 static const int kNumBarkSounds = 4;
-extern QSound **gBarkSounds;
-extern QSound *gNoBarkSound;
+extern QSoundEffect **gBarkSounds;
+extern QSoundEffect *gNoBarkSound;
 #endif // !QT_NO_SOUND
 
 /*!!!

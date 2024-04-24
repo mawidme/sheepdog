@@ -180,18 +180,18 @@ QSvgRenderer **gSvgLevelRenderer[NumLevelElemTypes] = {NULL};
 
 #ifndef QT_NO_SOUND
 // level
-QSound **levelSounds            = NULL;
-QSound *gLevelDoneSound         = NULL;
-QSound *gTryAgainSound          = NULL;
-QSound *gGameOverSound          = NULL;
-QSound **gSheepRescuedSound     = NULL;
+QSoundEffect **levelSounds            = NULL;
+QSoundEffect *gLevelDoneSound         = NULL;
+QSoundEffect *gTryAgainSound          = NULL;
+QSoundEffect *gGameOverSound          = NULL;
+QSoundEffect **gSheepRescuedSound     = NULL;
 
 // sheep
-QSound **gSheepSound            = NULL;
+QSoundEffect **gSheepSound            = NULL;
 
 // dog
-QSound *gBarkPowerCriticalSound = NULL;
-QSound *gBarkPowerFullSound     = NULL;
-QSound **gBarkSounds            = NULL;
-QSound *gNoBarkSound            = NULL;
+QSoundEffect *gBarkPowerCriticalSound = NULL;
+QSoundEffect *gBarkPowerFullSound     = NULL;
+QSoundEffect **gBarkSounds            = NULL;
+QSoundEffect *gNoBarkSound            = NULL;
 #endif // QT_SOUND

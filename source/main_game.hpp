@@ -9,7 +9,7 @@
 #include <QtSvg/QSvgRenderer>
 
 #if defined(QT_SOUND)
-#include <QSound>
+#include <QtMultimedia/QSoundEffect>
 #endif
 
 class MainGame
@@ -46,7 +46,7 @@ public:
 	long int yInfoOffset;
 
 #ifndef QT_NO_SOUND
-	QSound *music;
+    QSoundEffect *music;
 #endif
 };
 

@@ -21,7 +21,7 @@
 #include "mygraphicsview.hpp"
 
 #if defined(QT_SOUND)
-#include <QSound>
+#include <QtMultimedia/QSoundEffect>
 #endif
 
 #include <QtCore/QTimer>

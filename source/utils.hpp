@@ -25,7 +25,7 @@ QGraphicsSvgItem* loadSvgImage(const QString filename);
 void loadSvgImage(QSvgRenderer **ppRenderer, const QString filename);
 
 #ifndef QT_NO_SOUND
-QSound* loadSound(const QString filename);
+QSoundEffect* loadSound(const QString filename);
 #endif
 
 void setGlobals(bool first);
