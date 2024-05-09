@@ -1,4 +1,4 @@
-QT += core gui xml svg multimedia
+QT += core gui xml svg multimedia widgets svgwidgets core5compat
 
 OTHER_FILES += \
     android/AndroidManifest.xml \
