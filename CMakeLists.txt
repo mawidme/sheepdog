@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.24)
+cmake_minimum_required(VERSION 3.22)
 
 project(sheepdog VERSION 0.1 LANGUAGES C CXX)
 
@@ -22,7 +22,13 @@ set(SDL_EXAMPLES OFF CACHE BOOL "" FORCE)
 add_subdirectory(external/SDL EXCLUDE_FROM_ALL)
 
 # --- game ------------------------------------------------------------------
-add_executable(sheepdog src/main.cpp)
+if(ANDROID)
+    # SDLActivity loads the game from libmain.so
+    add_library(sheepdog SHARED src/main.cpp)
+    set_target_properties(sheepdog PROPERTIES OUTPUT_NAME main)
+else()
+    add_executable(sheepdog src/main.cpp)
+endif()
 target_link_libraries(sheepdog PRIVATE SDL3::SDL3)
 
 if(MSVC)

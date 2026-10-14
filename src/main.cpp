@@ -27,8 +27,10 @@ void render(App& app)
 {
     // placeholder: pulse the clear colour so a running loop is visible
     const float g = 0.35f + 0.1f * static_cast<float>(SDL_sin(app.time * 2.0));
-    SDL_SetRenderDrawColorFloat(app.renderer, 0.2f, g, 0.2f, 1.0f);
+    SDL_SetRenderDrawColor(app.renderer, 0, 0, 0, 255);
     SDL_RenderClear(app.renderer);
+    SDL_SetRenderDrawColorFloat(app.renderer, 0.2f, g, 0.2f, 1.0f);
+    SDL_RenderFillRect(app.renderer, nullptr); // fills the logical (letterboxed) area
     SDL_RenderPresent(app.renderer);
 }
 
@@ -43,9 +45,17 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
         return SDL_APP_FAILURE;
     }
 
+    // landscape only on mobile; must be set before the window is created
+    SDL_SetHint(SDL_HINT_ORIENTATIONS, "LandscapeLeft LandscapeRight");
+
+#if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_IOS)
+    constexpr SDL_WindowFlags kWindowFlags = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+#else
+    constexpr SDL_WindowFlags kWindowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+#endif
+
     auto* app = new App;
-    if (!SDL_CreateWindowAndRenderer("Sheepdog", kWindowWidth, kWindowHeight,
-                                     SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY,
+    if (!SDL_CreateWindowAndRenderer("Sheepdog", kWindowWidth, kWindowHeight, kWindowFlags,
                                      &app->window, &app->renderer)) {
         SDL_Log("window/renderer creation failed: %s", SDL_GetError());
         delete app;

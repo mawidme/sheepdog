@@ -29,6 +29,19 @@ python -m http.server -d build/web 8000   # then open http://localhost:8000/shee
 
 The page must be served over http; opening the .html file directly does not work.
 
+## Android
+
+Requires Android Studio (or the Android SDK) with NDK 25.1.8937393 and CMake 3.22.1 installed via the SDK Manager, and a JDK 17
+(Android Studio's bundled JBR works). Gradle builds the native code through the top-level `CMakeLists.txt`; SDL's Java glue
+is compiled straight from `external/SDL/android-project`, so there is nothing to copy.
+
+```
+gradlew assembleDebug                      # APK in app/build/outputs/apk/debug/
+gradlew installDebug                       # build + install on a running emulator/device
+```
+
+Or open the repo root in Android Studio. `local.properties` points to the SDK; adjust `sdk.dir` if yours lives elsewhere.
+
 The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
 
 ---
