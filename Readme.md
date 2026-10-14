@@ -42,6 +42,20 @@ gradlew installDebug                       # build + install on a running emulat
 
 Or open the repo root in Android Studio. `local.properties` points to the SDK; adjust `sdk.dir` if yours lives elsewhere.
 
+## iOS (untested so far)
+
+Requires a Mac with Xcode and CMake. Generate an Xcode project:
+
+```
+cmake -S . -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0       -DSHEEPDOG_IOS_TEAM_ID=<your team id>
+open build/ios/sheepdog.xcodeproj
+```
+
+Select the `sheepdog` scheme and a device or simulator, then run. The team ID is shown in Xcode under
+Settings > Accounts. With a free Apple ID (personal team), installs on your own device expire after 7 days, and the
+bundle ID may need to be made unique: `-DSHEEPDOG_BUNDLE_ID=ch.erglim.sheepdog.<something>`.
+TestFlight requires a paid Apple Developer Program membership.
+
 The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
 
 ---

@@ -41,3 +41,6 @@ app/build/**
 
 # Backups
 sheepdog.pro.user.*
+
+# Machine-specific SDK paths
+local.properties
