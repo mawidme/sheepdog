@@ -6,7 +6,11 @@ The SDL3 port is built with CMake. SDL is a git submodule pinned to a release ta
 git clone --recurse-submodules <repo>     # or: git submodule update --init
 cmake -S . -B build/win
 cmake --build build/win --config Debug
+ctest --test-dir build/win -C Debug        # unit tests (desktop builds only)
 ```
+
+Code layout: `src/core` holds platform-independent utilities (vectors, rects, colours, strings, random) with no SDL
+dependency; it is unit tested in `tests/`.
 
 ## Web (Emscripten)
 

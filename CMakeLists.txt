@@ -26,6 +26,20 @@ if(IOS)
 endif()
 add_subdirectory(external/SDL EXCLUDE_FROM_ALL)
 
+if(MSVC)
+    set(SHEEPDOG_WARNINGS /W4)
+else()
+    set(SHEEPDOG_WARNINGS -Wall -Wextra)
+endif()
+
+# --- core: platform independent utilities, no SDL ---------------------------
+add_library(sheepdog_core STATIC
+    src/core/random.cpp
+    src/core/strings.cpp
+)
+target_include_directories(sheepdog_core PUBLIC src)
+target_compile_options(sheepdog_core PRIVATE ${SHEEPDOG_WARNINGS})
+
 # --- game ------------------------------------------------------------------
 if(ANDROID)
     # SDLActivity loads the game from libmain.so
@@ -34,12 +48,16 @@ if(ANDROID)
 else()
     add_executable(sheepdog src/main.cpp)
 endif()
-target_link_libraries(sheepdog PRIVATE SDL3::SDL3)
+target_link_libraries(sheepdog PRIVATE sheepdog_core SDL3::SDL3)
+target_compile_options(sheepdog PRIVATE ${SHEEPDOG_WARNINGS})
 
-if(MSVC)
-    target_compile_options(sheepdog PRIVATE /W4)
-else()
-    target_compile_options(sheepdog PRIVATE -Wall -Wextra)
+# --- tests (desktop only) ----------------------------------------------------
+if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
+    enable_testing()
+    add_executable(test_core tests/test_core.cpp)
+    target_link_libraries(test_core PRIVATE sheepdog_core)
+    target_compile_options(test_core PRIVATE ${SHEEPDOG_WARNINGS})
+    add_test(NAME core COMMAND test_core)
 endif()
 
 if(EMSCRIPTEN)
