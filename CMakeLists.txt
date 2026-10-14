@@ -40,6 +40,17 @@ add_library(sheepdog_core STATIC
 target_include_directories(sheepdog_core PUBLIC src)
 target_compile_options(sheepdog_core PRIVATE ${SHEEPDOG_WARNINGS})
 
+# --- third party: cJSON (vendored, external/cjson/VERSION.txt) -----------------
+add_library(cjson STATIC external/cjson/cJSON.c)
+target_include_directories(cjson PUBLIC external/cjson)
+
+# --- game: game logic and data, no SDL ---------------------------------------
+add_library(sheepdog_game STATIC
+    src/game/level_data.cpp
+)
+target_link_libraries(sheepdog_game PUBLIC sheepdog_core PRIVATE cjson)
+target_compile_options(sheepdog_game PRIVATE ${SHEEPDOG_WARNINGS})
+
 # --- gfx: 2D rendering on top of SDL_Renderer -------------------------------
 add_library(sheepdog_gfx STATIC
     src/gfx/renderer.cpp
@@ -63,7 +74,7 @@ if(ANDROID)
 else()
     add_executable(sheepdog ${SHEEPDOG_SOURCES})
 endif()
-target_link_libraries(sheepdog PRIVATE sheepdog_gfx)
+target_link_libraries(sheepdog PRIVATE sheepdog_gfx sheepdog_game)
 target_compile_options(sheepdog PRIVATE ${SHEEPDOG_WARNINGS})
 
 # --- assets (assets/: baked images, later levels and sounds) ----------------
@@ -98,6 +109,12 @@ if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
     target_link_libraries(test_gfx PRIVATE sheepdog_gfx)
     target_compile_options(test_gfx PRIVATE ${SHEEPDOG_WARNINGS})
     add_test(NAME gfx COMMAND test_gfx)
+
+    add_executable(test_level tests/test_level.cpp)
+    target_link_libraries(test_level PRIVATE sheepdog_game)
+    target_compile_options(test_level PRIVATE ${SHEEPDOG_WARNINGS})
+    target_compile_definitions(test_level PRIVATE SHEEPDOG_ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets")
+    add_test(NAME level COMMAND test_level)
 endif()
 
 if(EMSCRIPTEN)

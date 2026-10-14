@@ -1,5 +1,6 @@
 #pragma once
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -12,5 +13,8 @@ namespace platform {
 //   iOS:     assets/ is copied into the app bundle
 //   web:     assets/ is preloaded into the virtual file system at /assets
 std::string assetPath(std::string_view relativePath);
+
+// Whole content of an asset file (e.g. "levels/level0.json"); nullopt and a log message if it can't be read.
+std::optional<std::string> readAssetFile(std::string_view relativePath);
 
 } // namespace platform

@@ -78,6 +78,12 @@ resvg: on Windows unzip `resvg-win64.zip` from the GitHub releases (v0.47.0 is t
 `%USERPROFILE%\tools\resvg`; on macOS `brew install resvg`. A few SVGs contain text in the "Aharoni" font; if it is not
 installed, resvg falls back to a default font.
 
+## Levels
+
+Built-in levels are JSON files in `assets/levels/levelN.json`; the format is documented in
+`src/game/level_data.hpp`. They were converted from the old XML files in `levels/` (still used by the legacy Qt build)
+with `python tools/convert_levels_xml_to_json.py levels/*.xml --out assets/levels`, which also works for old user levels.
+
 The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
 
 ---
