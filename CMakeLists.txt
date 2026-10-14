@@ -40,15 +40,28 @@ add_library(sheepdog_core STATIC
 target_include_directories(sheepdog_core PUBLIC src)
 target_compile_options(sheepdog_core PRIVATE ${SHEEPDOG_WARNINGS})
 
+# --- gfx: 2D rendering on top of SDL_Renderer -------------------------------
+add_library(sheepdog_gfx STATIC
+    src/gfx/renderer.cpp
+    src/gfx/tessellate.cpp
+    src/gfx/texture.cpp
+)
+target_link_libraries(sheepdog_gfx PUBLIC sheepdog_core SDL3::SDL3)
+target_compile_options(sheepdog_gfx PRIVATE ${SHEEPDOG_WARNINGS})
+
 # --- game ------------------------------------------------------------------
+set(SHEEPDOG_SOURCES
+    src/main.cpp
+    src/demo.cpp
+)
 if(ANDROID)
     # SDLActivity loads the game from libmain.so
-    add_library(sheepdog SHARED src/main.cpp)
+    add_library(sheepdog SHARED ${SHEEPDOG_SOURCES})
     set_target_properties(sheepdog PROPERTIES OUTPUT_NAME main)
 else()
-    add_executable(sheepdog src/main.cpp)
+    add_executable(sheepdog ${SHEEPDOG_SOURCES})
 endif()
-target_link_libraries(sheepdog PRIVATE sheepdog_core SDL3::SDL3)
+target_link_libraries(sheepdog PRIVATE sheepdog_gfx)
 target_compile_options(sheepdog PRIVATE ${SHEEPDOG_WARNINGS})
 
 # --- tests (desktop only) ----------------------------------------------------
@@ -58,6 +71,11 @@ if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
     target_link_libraries(test_core PRIVATE sheepdog_core)
     target_compile_options(test_core PRIVATE ${SHEEPDOG_WARNINGS})
     add_test(NAME core COMMAND test_core)
+
+    add_executable(test_gfx tests/test_gfx.cpp)
+    target_link_libraries(test_gfx PRIVATE sheepdog_gfx)
+    target_compile_options(test_gfx PRIVATE ${SHEEPDOG_WARNINGS})
+    add_test(NAME gfx COMMAND test_gfx)
 endif()
 
 if(EMSCRIPTEN)

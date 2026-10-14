@@ -10,7 +10,8 @@ ctest --test-dir build/win -C Debug        # unit tests (desktop builds only)
 ```
 
 Code layout: `src/core` holds platform-independent utilities (vectors, rects, colours, strings, random) with no SDL
-dependency; it is unit tested in `tests/`.
+dependency; `src/gfx` is the 2D rendering layer on top of `SDL_Renderer` (textures, sprites, shapes, camera).
+Both are unit tested in `tests/` (gfx tests cover the SDL-free parts: camera maths and shape tessellation).
 
 ## Web (Emscripten)
 
