@@ -31,6 +31,12 @@ else()
     target_compile_options(sheepdog PRIVATE -Wall -Wextra)
 endif()
 
+if(EMSCRIPTEN)
+    # emit sheepdog.html + .js + .wasm; serve the build dir over http to run it
+    set_target_properties(sheepdog PROPERTIES SUFFIX ".html")
+    target_link_options(sheepdog PRIVATE -sALLOW_MEMORY_GROWTH=1)
+endif()
+
 if(WIN32)
     # SDL is linked statically; hide the console window in release builds
     set_target_properties(sheepdog PROPERTIES WIN32_EXECUTABLE $<CONFIG:Release>)

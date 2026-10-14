@@ -8,6 +8,27 @@ cmake -S . -B build/win
 cmake --build build/win --config Debug
 ```
 
+## Web (Emscripten)
+
+Install emsdk once (outside the repo, ~1 GB):
+
+```
+git clone https://github.com/emscripten-core/emsdk.git %USERPROFILE%\emsdk
+cd %USERPROFILE%\emsdk
+emsdk install latest
+emsdk activate latest
+```
+
+Build (in a shell where `emsdk_env` was sourced; needs Ninja, e.g. the one bundled with Visual Studio):
+
+```
+emcmake cmake -S . -B build/web -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build/web
+python -m http.server -d build/web 8000   # then open http://localhost:8000/sheepdog.html
+```
+
+The page must be served over http; opening the .html file directly does not work.
+
 The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
 
 ---
