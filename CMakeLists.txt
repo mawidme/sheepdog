@@ -46,7 +46,10 @@ target_include_directories(cjson PUBLIC external/cjson)
 
 # --- game: game logic and data, no SDL ---------------------------------------
 add_library(sheepdog_game STATIC
+    src/game/character.cpp
+    src/game/element.cpp
     src/game/level_data.cpp
+    src/game/world.cpp
 )
 target_link_libraries(sheepdog_game PUBLIC sheepdog_core PRIVATE cjson)
 target_compile_options(sheepdog_game PRIVATE ${SHEEPDOG_WARNINGS})
@@ -66,6 +69,7 @@ target_compile_options(sheepdog_gfx PRIVATE ${SHEEPDOG_WARNINGS})
 set(SHEEPDOG_SOURCES
     src/main.cpp
     src/demo.cpp
+    src/world_view.cpp
 )
 if(ANDROID)
     # SDLActivity loads the game from libmain.so
@@ -115,6 +119,12 @@ if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
     target_compile_options(test_level PRIVATE ${SHEEPDOG_WARNINGS})
     target_compile_definitions(test_level PRIVATE SHEEPDOG_ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets")
     add_test(NAME level COMMAND test_level)
+
+    add_executable(test_world tests/test_world.cpp)
+    target_link_libraries(test_world PRIVATE sheepdog_game)
+    target_compile_options(test_world PRIVATE ${SHEEPDOG_WARNINGS})
+    target_compile_definitions(test_world PRIVATE SHEEPDOG_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
+    add_test(NAME world COMMAND test_world)
 endif()
 
 if(EMSCRIPTEN)

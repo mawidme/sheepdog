@@ -5,6 +5,7 @@
 #include <SDL3/SDL_main.h>
 
 #include "demo.hpp"
+#include "game/constants.hpp"
 #include "gfx/renderer.hpp"
 #include "gfx/texture_cache.hpp"
 
@@ -16,7 +17,8 @@ namespace {
 // Minimum logical canvas; the game is laid out for 800x480 (as the Qt version).
 constexpr int    kMinLogicalWidth  = 800;
 constexpr int    kMinLogicalHeight = 480;
-constexpr double kFixedStep        = 1.0 / 60.0;
+// simulation step: the game logic runs at the Qt version's frame rate, drawing interpolates
+constexpr double kFixedStep        = 1.0 / game::kTicksPerSecond;
 
 struct App {
     SDL_Window*   window   = nullptr;
@@ -126,11 +128,11 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 
     app.accumulator += frame;
     while (app.accumulator >= kFixedStep) {
-        app.demo->update(kFixedStep);
+        app.demo->tick();
         app.accumulator -= kFixedStep;
     }
 
-    app.demo->draw();
+    app.demo->draw(static_cast<float>(app.accumulator / kFixedStep));
     return SDL_APP_CONTINUE;
 }
 

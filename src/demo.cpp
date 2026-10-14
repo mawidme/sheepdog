@@ -1,10 +1,11 @@
 #include "demo.hpp"
 
-#include "core/math.hpp"
 #include "core/strings.hpp"
+#include "game/level_data.hpp"
 #include "gfx/renderer.hpp"
 #include "gfx/texture_cache.hpp"
 #include "platform/assets.hpp"
+#include "world_view.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -18,15 +19,11 @@ using core::Vec2;
 namespace {
 
 constexpr int kNumLevels = 4;
-constexpr float kFenceWidth = 6.0f;     // pole diameter (as in the Qt version)
-constexpr float kFenceSlatWidth = 3.0f;
-constexpr float kFencePoleDist = 25.0f;
-
-// draws a texture at its natural (SVG) size, centred on pos
-void drawCentered(gfx::Renderer& r, const gfx::Texture& tex, Vec2 pos, const gfx::SpriteParams& params = {})
-{
-    r.drawTexture(tex, {pos - tex.size() * 0.5f, tex.size()}, params);
-}
+// click closer than this to the dog: bark instead of walking (Qt: kDogBarkClickThreshold)
+constexpr float kDogBarkClickThreshold = 30.0f;
+constexpr float kDragThresholdDist = 10.0f;
+// the view scrolls to keep the dog this far from the screen edges (Qt: gDogMinDistToBorder)
+constexpr float kDogMinDistToBorder = 140.0f;
 
 } // namespace
 
@@ -41,44 +38,126 @@ void Demo::loadLevel(int number)
     const std::string file = core::format("levels/level%d.json", number);
     std::string error;
     const auto json = platform::readAssetFile(file);
-    m_level = json ? game::parseLevel(*json, &error) : std::nullopt;
-    if (json && !m_level)
+    const auto level = json ? game::parseLevel(*json, &error) : std::nullopt;
+    if (!level) {
         SDL_Log("%s: %s", file.c_str(), error.c_str());
+        return;
+    }
+    m_world = std::make_unique<game::World>(*level);
+    m_movingDog = m_draggingDog = false;
 
-    const Rect bounds = levelBounds();
     m_camera.viewportSize = m_renderer.screenSize();
-    // start with the whole level width (or height) on screen
-    m_camera.zoom = std::clamp(std::min(m_camera.viewportSize.x / bounds.w, m_camera.viewportSize.y / bounds.h),
-                               m_camera.minZoom, m_camera.maxZoom);
-    m_camera.clampTo(bounds);
+    m_camera.zoom = 1.0f;
+    followDog();
 }
 
-Rect Demo::levelBounds() const
+void Demo::followDog()
 {
-    if (!m_level)
-        return {0, 0, 800, 480};
-    return {0, 0, static_cast<float>(m_level->width), static_cast<float>(m_level->height)};
+    m_camera.viewportSize = m_renderer.screenSize();
+    if (m_world && !m_world->dogs().empty()) {
+        // scroll so the dog keeps a minimum distance to the screen edges (Level::update())
+        const Vec2 dog = m_camera.worldToScreen(m_world->dogs()[0].position());
+        const float margin =
+            std::min(kDogMinDistToBorder, std::min(m_camera.viewportSize.x, m_camera.viewportSize.y) / 3.0f);
+        Vec2 shift;
+        if (dog.x < margin)
+            shift.x = dog.x - margin;
+        else if (dog.x > m_camera.viewportSize.x - margin)
+            shift.x = dog.x - (m_camera.viewportSize.x - margin);
+        if (dog.y < margin)
+            shift.y = dog.y - margin;
+        else if (dog.y > m_camera.viewportSize.y - margin)
+            shift.y = dog.y - (m_camera.viewportSize.y - margin);
+        m_camera.position += shift / m_camera.zoom;
+    }
+    if (m_world)
+        m_camera.clampTo({{0, 0}, m_world->size()});
 }
 
 void Demo::handleEvent(const SDL_Event& event)
 {
+    if (!m_world)
+        return;
+    game::World& w = *m_world;
+    game::Dog* dog = w.dogs().empty() ? nullptr : &w.dogs()[0];
+
     switch (event.type) {
-    case SDL_EVENT_MOUSE_BUTTON_DOWN:
-        m_dragging = event.button.button == SDL_BUTTON_LEFT;
+    case SDL_EVENT_KEY_DOWN: {
+        const SDL_Keycode key = event.key.key;
+        if (key >= SDLK_0 && key < SDLK_0 + kNumLevels) {
+            loadLevel(static_cast<int>(key - SDLK_0));
+            return;
+        }
+        if (key == SDLK_R) {
+            loadLevel(m_levelNumber);
+            return;
+        }
+        if (key == SDLK_C) {
+            m_showCollisionRects = !m_showCollisionRects;
+            return;
+        }
+        if (!dog || event.key.repeat)
+            return;
+        // keyboard: walk in one of four directions (Qt: MyGraphicsScene::keyPressEvent)
+        float angle = -1.0f;
+        if (key == SDLK_UP || key == SDLK_W)
+            angle = 90.0f;
+        else if (key == SDLK_RIGHT || key == SDLK_D)
+            angle = 0.0f;
+        else if (key == SDLK_DOWN || key == SDLK_S)
+            angle = 270.0f;
+        else if (key == SDLK_LEFT || key == SDLK_A)
+            angle = 180.0f;
+        else if (key == SDLK_SPACE)
+            w.bark();
+        if (angle >= 0.0f) {
+            dog->target.reset();
+            dog->changeAngle(angle);
+            dog->changeSpeed(w.tuning.dogSpeed);
+        }
         break;
+    }
+    case SDL_EVENT_KEY_UP: {
+        if (!dog)
+            return;
+        const SDL_Keycode key = event.key.key;
+        if (key == SDLK_UP || key == SDLK_W || key == SDLK_DOWN || key == SDLK_S)
+            dog->zeroSpeedY();
+        else if (key == SDLK_RIGHT || key == SDLK_D || key == SDLK_LEFT || key == SDLK_A)
+            dog->zeroSpeedX();
+        break;
+    }
+    case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+        if (!dog || event.button.button != SDL_BUTTON_LEFT)
+            return;
+        m_clickPoint = {event.button.x, event.button.y};
+        const Vec2 levelPoint = toLevel(m_clickPoint);
+        if (distance(dog->position(), levelPoint) > kDogBarkClickThreshold) {
+            m_movingDog = true;
+            w.walkTo(0, levelPoint);
+        } else {
+            w.bark();
+        }
+        break;
+    }
+    case SDL_EVENT_MOUSE_MOTION: {
+        const Vec2 p{event.motion.x, event.motion.y};
+        if (m_movingDog && distance(m_clickPoint, p) > kDragThresholdDist) {
+            m_draggingDog = true;
+            w.walkTo(0, toLevel(p));
+        }
+        break;
+    }
     case SDL_EVENT_MOUSE_BUTTON_UP:
-        m_dragging = false;
-        break;
-    case SDL_EVENT_MOUSE_MOTION:
-        if (m_dragging)
-            m_camera.panByScreen({event.motion.xrel, event.motion.yrel});
-        break;
-    case SDL_EVENT_KEY_DOWN:
-        // 0-3: switch level, space: next level
-        if (event.key.key >= SDLK_0 && event.key.key < SDLK_0 + kNumLevels)
-            loadLevel(static_cast<int>(event.key.key - SDLK_0));
-        else if (event.key.key == SDLK_SPACE)
-            loadLevel((m_levelNumber + 1) % kNumLevels);
+        if (event.button.button != SDL_BUTTON_LEFT)
+            return;
+        m_movingDog = false;
+        // after dragging, stop on release instead of walking to the last point
+        if (m_draggingDog && dog) {
+            dog->changeSpeed(0.0f);
+            dog->target.reset();
+        }
+        m_draggingDog = false;
         break;
     case SDL_EVENT_MOUSE_WHEEL:
         m_camera.zoomAt({event.wheel.mouse_x, event.wheel.mouse_y}, std::pow(1.1f, event.wheel.y));
@@ -88,77 +167,39 @@ void Demo::handleEvent(const SDL_Event& event)
     }
 }
 
-void Demo::update(double dt)
+void Demo::tick()
 {
-    m_time += dt;
-    m_camera.viewportSize = m_renderer.screenSize();
-    m_camera.clampTo(levelBounds());
+    if (!m_world)
+        return;
+    m_world->tick();
+    m_world->takeEvents(); // sounds come in chunk 8
+    followDog();
 }
 
-void Demo::draw()
+void Demo::draw(float alpha)
 {
     gfx::Renderer& r = m_renderer;
-    const float t = static_cast<float>(m_time);
-
     r.clear(Color::black());
-
-    // --- world space -------------------------------------------------------
-    r.setCamera(&m_camera);
-    r.fillRect(levelBounds(), Color(60, 130, 50));
-
-    const float phase = std::fmod(t, 1.5f) / 1.5f;
-    if (m_level) {
-        const game::LevelData& level = *m_level;
-        for (const game::WaterData& w : level.water)
-            r.fillRoundedRect(Rect::fromCorners(w.from, w.to), 10.0f, Color(0, 0, 170));
-
-        // fences: slat between pole centres, poles along it
-        for (const game::FenceData& f : level.fences) {
-            r.drawLine(f.from, f.to, Color(135, 73, 33), kFenceSlatWidth);
-            const float len = distance(f.from, f.to);
-            const int poles = std::max(1, static_cast<int>(std::ceil(len / kFencePoleDist)));
-            for (int i = 0; i <= poles; ++i) {
-                const Vec2 p = f.from + (f.to - f.from) * (static_cast<float>(i) / static_cast<float>(poles));
-                r.fillEllipse({p - Vec2(kFenceWidth, kFenceWidth) * 0.5f, {kFenceWidth, kFenceWidth}},
-                              Color(110, 53, 18));
-            }
-        }
-
-        // props are positioned by their top-left corner
-        for (const game::PropData& b : level.bushes)
-            r.drawTexture(m_textures.get(core::format("bush%d", b.style)), {b.pos, m_textures.get("bush1").size()});
-        for (const game::PropData& e : level.exits)
-            r.drawTexture(m_textures.get(core::format("exit%d", e.style)), {e.pos, m_textures.get("exit1").size()});
-
-        // characters are positioned by their centre
-        for (Vec2 s : level.sheep)
-            drawCentered(r, m_textures.get("sheep01"), s, {.rotationDeg = std::sin(t + s.x) * 20.0f});
-        const int frame = static_cast<int>(t * 10.0f) % 7 + 1;
-        for (Vec2 d : level.dogs) {
-            drawCentered(r, m_textures.get(core::format("dog%02d", frame)), d);
-            // bark wave: expanding ring that fades out
-            const float radius = 20.0f + phase * 80.0f;
-            r.drawEllipse({d - Vec2(radius, radius), {2 * radius, 2 * radius}},
-                          Color(255, 255, 255).withAlpha(static_cast<std::uint8_t>(200 * (1.0f - phase))), 4.0f);
-        }
-
-        // trees last: they cover characters walking below them
-        for (const game::PropData& tr : level.trees)
-            r.drawTexture(m_textures.get(core::format("tree%d", tr.style)), {tr.pos, m_textures.get("tree1").size()});
+    if (!m_world) {
+        r.present();
+        return;
     }
+    const game::World& w = *m_world;
 
-    // --- screen space (UI) -------------------------------------------------
+    r.setCamera(&m_camera);
+    drawWorld(r, m_textures, w, alpha, m_showCollisionRects);
+
+    // --- screen space: minimal info bar (bark power, sheep left) ------------
     r.setCamera(nullptr);
     const Vec2 screen = r.screenSize();
-    const Rect infoBar{0, 0, 60, screen.y};
-    r.fillRect(infoBar, Color(0, 0, 0, 150));
-    r.fillRect({16, 20, 28, 200}, Color(60, 60, 60, 180));
-    r.fillRect({16, 20 + 200 * (1.0f - phase), 28, 200 * phase}, Color(9, 150, 9, 200));
-    const char* buttons[] = {"barkButton", "pauseButton", "retryButton"};
-    for (int i = 0; i < 3; ++i) {
-        const Rect button{8, screen.y - 52.0f * static_cast<float>(i + 1), 44, 44};
-        r.drawTexture(m_textures.get(buttons[i]), button);
-    }
+    r.fillRect({0, 0, 60, screen.y}, Color(255, 255, 255, 100));
+    const float power = w.dogs().empty() ? 0.0f : w.dogs()[0].barkPower() / game::kMaxBarkPower;
+    const Rect bar{16, 20, 28, 200};
+    r.fillRect(bar, Color(60, 60, 60, 180));
+    r.fillRect({bar.x, bar.bottom() - bar.h * power, bar.w, bar.h * power}, Color(0, 0, 180, 200));
+    // one dot per sheep still in the level
+    for (int i = 0; i < w.sheepLeft(); ++i)
+        r.fillEllipse({22, 240 + 20.0f * static_cast<float>(i), 16, 16}, Color::white());
 
     r.present();
 }
