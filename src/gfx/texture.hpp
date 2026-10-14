@@ -18,16 +18,22 @@ public:
     Texture(const Texture&) = delete;
     Texture& operator=(const Texture&) = delete;
 
-    // empty Texture on failure (see SDL_GetError())
-    static Texture fromSurface(SDL_Renderer* renderer, SDL_Surface* surface);
+    // Empty Texture on failure (see SDL_GetError()).
+    // pixelsPerUnit: how many texels make up one logical unit (the image scale it was baked at).
+    static Texture fromSurface(SDL_Renderer* renderer, SDL_Surface* surface, float pixelsPerUnit = 1.0f);
 
     bool valid() const { return m_texture != nullptr; }
     SDL_Texture* sdl() const { return m_texture; }
-    core::Vec2 size() const { return m_size; }
+
+    // logical size, i.e. the size of the source SVG; use this for layout
+    core::Vec2 size() const { return m_pixelSize / m_pixelsPerUnit; }
+    core::Vec2 pixelSize() const { return m_pixelSize; }
+    float pixelsPerUnit() const { return m_pixelsPerUnit; }
 
 private:
     SDL_Texture* m_texture = nullptr;
-    core::Vec2   m_size;
+    core::Vec2   m_pixelSize;
+    float        m_pixelsPerUnit = 1.0f;
 };
 
 } // namespace gfx

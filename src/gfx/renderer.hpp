@@ -20,7 +20,7 @@ struct SpriteParams {
     float      opacity = 1.0f;
     core::Color tint = core::Color::white();
     bool       flipX = false;
-    const core::Rect* source = nullptr; // sub-rect of the texture in texels, nullptr = whole texture
+    const core::Rect* source = nullptr; // sub-rect in logical units (as Texture::size()), nullptr = whole texture
 };
 
 // Thin 2D drawing layer over SDL_Renderer.

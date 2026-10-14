@@ -45,6 +45,8 @@ add_library(sheepdog_gfx STATIC
     src/gfx/renderer.cpp
     src/gfx/tessellate.cpp
     src/gfx/texture.cpp
+    src/gfx/texture_cache.cpp
+    src/platform/assets.cpp
 )
 target_link_libraries(sheepdog_gfx PUBLIC sheepdog_core SDL3::SDL3)
 target_compile_options(sheepdog_gfx PRIVATE ${SHEEPDOG_WARNINGS})
@@ -63,6 +65,26 @@ else()
 endif()
 target_link_libraries(sheepdog PRIVATE sheepdog_gfx)
 target_compile_options(sheepdog PRIVATE ${SHEEPDOG_WARNINGS})
+
+# --- assets (assets/: baked images, later levels and sounds) ----------------
+# Android packages assets/ via Gradle (app/build.gradle.kts), the others here.
+set(SHEEPDOG_ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)
+if(EMSCRIPTEN)
+    target_link_options(sheepdog PRIVATE "--preload-file=${SHEEPDOG_ASSETS_DIR}@/assets")
+    set_property(TARGET sheepdog APPEND PROPERTY LINK_DEPENDS ${SHEEPDOG_ASSETS_DIR})
+elseif(IOS)
+    file(GLOB_RECURSE SHEEPDOG_ASSET_FILES ${SHEEPDOG_ASSETS_DIR}/*)
+    foreach(asset IN LISTS SHEEPDOG_ASSET_FILES)
+        file(RELATIVE_PATH rel ${SHEEPDOG_ASSETS_DIR} ${asset})
+        get_filename_component(rel_dir ${rel} DIRECTORY)
+        set_source_files_properties(${asset} PROPERTIES MACOSX_PACKAGE_LOCATION "assets/${rel_dir}")
+    endforeach()
+    target_sources(sheepdog PRIVATE ${SHEEPDOG_ASSET_FILES})
+elseif(NOT ANDROID)
+    add_custom_command(TARGET sheepdog POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHEEPDOG_ASSETS_DIR} $<TARGET_FILE_DIR:sheepdog>/assets
+        COMMENT "Copying assets")
+endif()
 
 # --- tests (desktop only) ----------------------------------------------------
 if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)

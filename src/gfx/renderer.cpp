@@ -79,8 +79,10 @@ void Renderer::drawTexture(const Texture& texture, const Rect& dst, const Sprite
 
     const SDL_FRect d = toSdl(toScreen(dst));
     SDL_FRect src;
-    if (params.source)
-        src = toSdl(*params.source);
+    if (params.source) {
+        const float ppu = texture.pixelsPerUnit();
+        src = {params.source->x * ppu, params.source->y * ppu, params.source->w * ppu, params.source->h * ppu};
+    }
 
     if (params.rotationDeg == 0.0f && !params.flipX) {
         SDL_RenderTexture(m_renderer, tex, params.source ? &src : nullptr, &d);

@@ -61,6 +61,23 @@ Settings > Accounts. With a free Apple ID (personal team), installs on your own 
 bundle ID may need to be made unique: `-DSHEEPDOG_BUNDLE_ID=ch.erglim.sheepdog.<something>`.
 TestFlight requires a paid Apple Developer Program membership.
 
+## Images
+
+The SVGs in `img/` are the source art. The game uses PNGs baked from them at three scales (1x, 2x, 4x texels per
+logical unit) in `assets/img/<scale>x/`; the game picks the scale matching the display density at startup.
+The baked PNGs are committed, so building does not need any SVG tooling.
+
+After adding or changing an SVG, re-bake all PNGs with [resvg](https://github.com/linebender/resvg) and commit them:
+
+```
+cmake -P tools/bake_images.cmake                       # finds resvg on PATH or in %USERPROFILE%\tools\resvg
+cmake -DRESVG=/path/to/resvg -P tools/bake_images.cmake  # or point to it explicitly
+```
+
+resvg: on Windows unzip `resvg-win64.zip` from the GitHub releases (v0.47.0 is the latest with a Windows build) to
+`%USERPROFILE%\tools\resvg`; on macOS `brew install resvg`. A few SVGs contain text in the "Aharoni" font; if it is not
+installed, resvg falls back to a default font.
+
 The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
 
 ---

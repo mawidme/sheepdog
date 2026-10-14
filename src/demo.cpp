@@ -1,7 +1,9 @@
 #include "demo.hpp"
 
 #include "core/math.hpp"
+#include "core/strings.hpp"
 #include "gfx/renderer.hpp"
+#include "gfx/texture_cache.hpp"
 
 #include <SDL3/SDL.h>
 
@@ -16,34 +18,15 @@ namespace {
 
 const Rect kLevelBounds{0, 0, 1600, 960};
 
-// Top-down "sheep" generated in code until the baked PNGs exist (chunk 4).
-// Head on the right, so rotation is visible.
-gfx::Texture makeSheepTexture(SDL_Renderer* renderer)
+// draws a texture at its natural (SVG) size, centred on pos
+void drawCentered(gfx::Renderer& r, const gfx::Texture& tex, Vec2 pos, const gfx::SpriteParams& params = {})
 {
-    constexpr int kSize = 64;
-    SDL_Surface* s = SDL_CreateSurface(kSize, kSize, SDL_PIXELFORMAT_RGBA32);
-    if (!s)
-        return {};
-    for (int y = 0; y < kSize; ++y) {
-        for (int x = 0; x < kSize; ++x) {
-            const float dx = (x + 0.5f - 28.0f) / 24.0f, dy = (y + 0.5f - 32.0f) / 18.0f;
-            const float hx = (x + 0.5f - 52.0f) / 9.0f, hy = (y + 0.5f - 32.0f) / 8.0f;
-            if (hx * hx + hy * hy <= 1.0f)
-                SDL_WriteSurfacePixel(s, x, y, 40, 40, 40, 255);
-            else if (dx * dx + dy * dy <= 1.0f)
-                SDL_WriteSurfacePixel(s, x, y, 245, 245, 235, 255);
-            else
-                SDL_WriteSurfacePixel(s, x, y, 0, 0, 0, 0);
-        }
-    }
-    gfx::Texture tex = gfx::Texture::fromSurface(renderer, s);
-    SDL_DestroySurface(s);
-    return tex;
+    r.drawTexture(tex, {pos - tex.size() * 0.5f, tex.size()}, params);
 }
 
 } // namespace
 
-Demo::Demo(gfx::Renderer& renderer) : m_renderer(renderer), m_sheep(makeSheepTexture(renderer.sdl()))
+Demo::Demo(gfx::Renderer& renderer, gfx::TextureCache& textures) : m_renderer(renderer), m_textures(textures)
 {
     m_camera.viewportSize = m_renderer.screenSize();
     // start zoomed out so the level fills the screen
@@ -102,19 +85,32 @@ void Demo::draw()
         r.drawEllipse({x - 8, 192, 16, 16}, Color(60, 30, 10), 2.0f);
     }
 
+    // trees, bushes, exit
+    drawCentered(r, m_textures.get("tree1"), {250, 150});
+    drawCentered(r, m_textures.get("tree1"), {420, 110});
+    drawCentered(r, m_textures.get("bush1"), {620, 380});
+    drawCentered(r, m_textures.get("bush1"), {1450, 820});
+    drawCentered(r, m_textures.get("exit1"), {1500, 120});
+
+    // bonus boxes, and a missing image (magenta placeholder)
+    drawCentered(r, m_textures.get("bonus/box"), {700, 800});
+    drawCentered(r, m_textures.get("bonus/powerBarkBox"), {760, 800});
+    drawCentered(r, m_textures.get("does/not/exist"), {820, 800});
+
     // sheep walking in a circle, rotated to face their direction of travel
     for (int i = 0; i < 6; ++i) {
         const float a = t * 0.6f + static_cast<float>(i) * (2.0f * core::kPi / 6.0f);
         const Vec2 pos = Vec2(1000, 600) + Vec2(std::cos(a), std::sin(a)) * 200.0f;
         const Vec2 velocity(-std::sin(a), std::cos(a));
-        // Character::setRotation(-angle): our texture faces right (0 degrees)
-        const float rotation = -velocity.angleDeg();
-        r.drawTexture(m_sheep, {pos - Vec2(24, 24), {48, 48}}, {.rotationDeg = rotation});
+        // as Character::setRotation(-m_angle - m_rotationOffset), images face down
+        drawCentered(r, m_textures.get("sheep01"), pos, {.rotationDeg = -velocity.angleDeg() - 90.0f});
     }
 
     // dog + bark wave: expanding ring that fades out
     const Vec2 dog{1000, 600};
-    r.fillEllipse({dog - Vec2(14, 14), {28, 28}}, Color(150, 90, 40));
+    // walk animation: dog01..dog07
+    const int frame = static_cast<int>(t * 10.0f) % 7 + 1;
+    drawCentered(r, m_textures.get(core::format("dog%02d", frame)), dog, {.rotationDeg = 45.0f});
     const float phase = std::fmod(t, 1.5f) / 1.5f;
     const float radius = 20.0f + phase * 140.0f;
     r.drawEllipse({dog - Vec2(radius, radius), {2 * radius, 2 * radius}},
@@ -123,9 +119,9 @@ void Demo::draw()
     // target line, semi-transparent
     r.drawLine(dog, {300, 300}, Color(255, 255, 0, 120), 3.0f);
 
-    // translucent sprite (bonus mode image fading out)
-    r.drawTexture(m_sheep, {300, 260, 80, 80},
-                  {.opacity = 0.5f + 0.5f * std::sin(t * 2.0f), .tint = Color(255, 180, 57)});
+    // fading, tinted sprite (bonus mode image)
+    drawCentered(r, m_textures.get("bonus/powerBarkMode"), {300, 300},
+                 {.opacity = 0.5f + 0.5f * std::sin(t * 2.0f), .tint = Color(255, 180, 57)});
 
     // --- screen space (UI) -------------------------------------------------
     r.setCamera(nullptr);
@@ -134,10 +130,10 @@ void Demo::draw()
     r.fillRect(infoBar, Color(0, 0, 0, 150));
     r.fillRect({16, 20, 28, 200}, Color(60, 60, 60, 180));
     r.fillRect({16, 20 + 200 * (1.0f - phase), 28, 200 * phase}, Color(9, 150, 9, 200));
+    const char* buttons[] = {"barkButton", "pauseButton", "retryButton"};
     for (int i = 0; i < 3; ++i) {
-        const Rect button{10, screen.y - 60.0f * static_cast<float>(i + 1), 40, 40};
-        r.fillRoundedRect(button, 8.0f, Color(227, 224, 61, 200));
-        r.drawRect(button, Color::black(), 2.0f);
+        const Rect button{8, screen.y - 52.0f * static_cast<float>(i + 1), 44, 44};
+        r.drawTexture(m_textures.get(buttons[i]), button);
     }
 
     r.present();

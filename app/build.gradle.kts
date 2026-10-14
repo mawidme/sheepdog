@@ -42,6 +42,8 @@ android {
         getByName("main") {
             // SDL's Java glue (SDLActivity etc.) is used straight from the submodule
             java.srcDir("../external/SDL/android-project/app/src/main/java")
+            // game assets become the APK's asset root (see src/platform/assets.cpp)
+            assets.srcDir("../assets")
         }
     }
     externalNativeBuild {

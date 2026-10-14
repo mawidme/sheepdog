@@ -6,6 +6,7 @@
 
 #include "demo.hpp"
 #include "gfx/renderer.hpp"
+#include "gfx/texture_cache.hpp"
 
 #include <cmath>
 #include <memory>
@@ -21,6 +22,7 @@ struct App {
     SDL_Window*   window   = nullptr;
     SDL_Renderer* renderer = nullptr;
     std::unique_ptr<gfx::Renderer> gfx;
+    std::unique_ptr<gfx::TextureCache> textures;
     std::unique_ptr<Demo>          demo;
     Uint64        lastTicks = 0;
     double        accumulator = 0.0;
@@ -74,7 +76,16 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
     updateLogicalSize(*app);
 
     app->gfx = std::make_unique<gfx::Renderer>(app->renderer);
-    app->demo = std::make_unique<Demo>(*app->gfx);
+
+    // pick the baked image resolution matching the display density
+    int pixelW = 0, pixelH = 0;
+    SDL_GetCurrentRenderOutputSize(app->renderer, &pixelW, &pixelH);
+    const float pixelsPerUnit = static_cast<float>(pixelH) / app->gfx->screenSize().y;
+    const gfx::ImageScale scale = gfx::chooseImageScale(pixelsPerUnit);
+    SDL_Log("output %dx%d px, %.2f px per unit -> %dx images", pixelW, pixelH, pixelsPerUnit, static_cast<int>(scale));
+    app->textures = std::make_unique<gfx::TextureCache>(app->renderer, scale);
+
+    app->demo = std::make_unique<Demo>(*app->gfx, *app->textures);
 
     app->lastTicks = SDL_GetTicksNS();
     *appstate = app;
@@ -127,7 +138,8 @@ void SDL_AppQuit(void* appstate, SDL_AppResult /*result*/)
 {
     auto* app = static_cast<App*>(appstate);
     if (app) {
-        app->demo.reset(); // owns textures, must go before the SDL renderer
+        app->demo.reset();
+        app->textures.reset(); // owns textures, must go before the SDL renderer
         app->gfx.reset();
         SDL_DestroyRenderer(app->renderer);
         SDL_DestroyWindow(app->window);
