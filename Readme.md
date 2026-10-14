@@ -1,3 +1,17 @@
+# BUILDING (SDL port, branch refactor/no-qt)
+
+The SDL3 port is built with CMake. SDL is a git submodule pinned to a release tag.
+
+```
+git clone --recurse-submodules <repo>     # or: git submodule update --init
+cmake -S . -B build/win
+cmake --build build/win --config Debug
+```
+
+The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
+
+---
+
 # REQUIREMENTS
 
 * Qt
