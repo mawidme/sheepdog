@@ -21,4 +21,4 @@ set qtBuildPath=c:\qt\qt6-android-build
 md %qtBuildPath%
 cd %qtBuildPath%
 
-%qtSrcPath%/configure.bat -platform android-clang -prefix c:\qt\qt6-android -android-ndk %ANDROID_NDK_ROOT% -android-sdk %ANDROID_SDK_ROOT% -qt-host-path c:\qt\qt6-windows -android-abis %ANDROID_ABI%
+%qtSrcPath%/configure.bat -platform android-clang -prefix c:\qt\qt6-android-%ANDROID_ABI% -android-ndk %ANDROID_NDK_ROOT% -android-sdk %ANDROID_SDK_ROOT% -qt-host-path c:\qt\qt6-windows -android-abis %ANDROID_ABI%

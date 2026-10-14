@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
     srand(QTime::currentTime().msec());
 
     //TODO: proper abstraction
-#ifdef MOBILE_VERSION
+#if 1 //def MOBILE_VERSION
     QSize screenRect = app.screens()[0]->size();
 #else
     QRect screenRect = app.desktop()->availableGeometry();
