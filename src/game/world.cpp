@@ -299,6 +299,15 @@ bool World::checkCollisions(Character& c)
             ++numColDirs;
     }
 
+    // No axis direction blocked: the obstacle was hit at a corner, diagonally. It lies in the
+    // movement quadrant spanned by directions 0 and 1 (walkVectors start at floor(angle / 90) * 90),
+    // so those are blocked. (The Qt version stopped the sheep as if blocked on all sides.)
+    if (numColDirs == 0) {
+        colDir[0] = true;
+        colDir[1] = c.angle() != static_cast<float>(static_cast<int>(std::floor(c.angle() / 90.0f)) * 90);
+        numColDirs = colDir[1] ? 2 : 1;
+    }
+
     int firstNoColDir = 0;
     while (firstNoColDir < kNumWalkDirections && colDir[firstNoColDir])
         ++firstNoColDir;
@@ -311,9 +320,9 @@ bool World::checkCollisions(Character& c)
         else
             newAngle = walkVectors[firstNoColDir].angleDeg() + static_cast<float>(core::randomInt(0, 45));
     } else if (numColDirs == 2) {
-        // (the second branch is unreachable, as in the Qt version)
-        if (!colDir[(firstNoColDir + 1) % 4] || !colDir[(firstNoColDir + 3) % 4]) {
-            // free directions are adjacent
+        // Free directions adjacent: turn from the first free one towards the other free one.
+        // (The Qt version also turned "+" when the other free one was at -90 degrees.)
+        if (!colDir[(firstNoColDir + 1) % 4]) {
             newAngle = walkVectors[firstNoColDir].angleDeg() + static_cast<float>(core::randomInt(0, 45));
         } else if (!colDir[(firstNoColDir + 3) % 4]) {
             newAngle = walkVectors[firstNoColDir].angleDeg() - static_cast<float>(core::randomInt(0, 45));
@@ -326,7 +335,7 @@ bool World::checkCollisions(Character& c)
         // only one way out
         newAngle = walkVectors[firstNoColDir].angleDeg();
     } else {
-        // no or all directions blocked (0 included, as in the Qt version)
+        // blocked on all sides
         c.changeSpeed(0.0f);
         return true;
     }
@@ -370,22 +379,18 @@ bool World::bark(size_t dogIndex)
     BarkWave& wave = m_barkWaves.back();
     wave.growthPerTick = (wave.maxRadius - wave.radius) / (kBarkWaveDuration * static_cast<float>(kTicksPerSecond));
 
-    // Sleep bonus: barking doesn't wake them up. (The Qt version checks the first sheep only.)
-    if (m_sheep.front().sleeping)
-        return true;
-
     for (Sheep& s : m_sheep) {
+        // sleeping sheep (sleep bonus) don't wake up
         if (s.sleeping || s.rescued)
             continue;
-        // As in the Qt version: distance from the sheep's image corner to the dog's centre,
-        // truncated to an integer, and direction between the two image corners.
-        const auto dist = static_cast<long>(distance(s.drawPosition(), dog.position()));
-        if (static_cast<float>(dist) > tuning.maxBarkDist)
+        const float dist = distance(s.position(), dog.position());
+        if (dist > tuning.maxBarkDist)
             continue;
-        const float newSpeed =
-            std::min(tuning.barkIntensity / static_cast<float>(std::max(dist, 1L)) * s.speed(), tuning.maxSheepSpeed);
-        s.changeSpeed(newSpeed);
-        s.changeAngle((s.drawPosition() - dog.drawPosition()).angleDeg());
+        // Adds speed, more the closer the dog is: as much as a normally walking sheep got in the
+        // Qt version, which multiplied the current speed (so standing sheep ignored barks).
+        const float boost = tuning.barkIntensity / std::max(dist, 1.0f) * kNormalSheepSpeed;
+        s.changeSpeed(std::min(s.speed() + boost, tuning.maxSheepSpeed));
+        s.changeAngle((s.position() - dog.position()).angleDeg());
     }
 
     if (dog.m_barkPower < 2 * kNeededBarkPower && dog.m_barkPower >= kNeededBarkPower)

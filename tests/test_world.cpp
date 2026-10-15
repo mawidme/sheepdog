@@ -84,7 +84,9 @@ void testElements()
     const Element h = makeFence({20, 7}, {107, 7});
     CHECK(!h.vertical && h.layer == 3);
     CHECK(near(h.bounds, Rect(13.5f, 0.5f, 100, 13)));
-    CHECK(near(*h.collision, Rect(23, 10, 100, 7))); // Qt quirk: offset by half the fence width
+    // collision area: slat width, from outer pole edge to outer pole edge; covers the slat
+    CHECK(near(*h.collision, Rect(13.5f, 3.5f, 100, 7)));
+    CHECK(h.collision->contains(h.slat));
     CHECK(near(h.slat, Rect(20, 3.5f, 87, 7)));
     CHECK(h.poles.size() == 2); // 87 / 60 -> 1 segment
     CHECK(near(h.poles[1], {107, 7}));
@@ -93,7 +95,8 @@ void testElements()
     const Element v = makeFence({50, 150}, {50, 20});
     CHECK(v.vertical);
     CHECK(near(v.bounds, Rect(43.5f, 13.5f, 13, 143)));
-    CHECK(near(*v.collision, Rect(53, 23, 7, 143)));
+    CHECK(near(*v.collision, Rect(46.5f, 13.5f, 7, 143)));
+    CHECK(v.collision->contains(v.slat));
     CHECK(v.poles.size() == 3 && near(v.poles[1], {50, 85}));
 
     CHECK(!makeWater({0, 0}, {10, 100}, 1).has_value()); // too narrow
@@ -258,8 +261,9 @@ void testBark()
     CHECK(near(w.dogs()[0].barkPower(), kMaxBarkPower - kNeededBarkPower));
 
     // speed: intensity / (truncated) distance * old speed, capped; direction away from the dog
-    const long dist = static_cast<long>(distance(nearSheep.drawPosition(), {500, 500}));
-    CHECK(near(nearSheep.speed(), std::min(250.0f / static_cast<float>(dist) * kNormalSheepSpeed, kNormalDogSpeed)));
+    // speed: + intensity / distance (centre to centre) * normal speed, capped; direction away from the dog
+    CHECK(near(nearSheep.speed(), std::min(kNormalSheepSpeed + 250.0f / 100.0f * kNormalSheepSpeed, kNormalDogSpeed)));
+    CHECK(near(nearSheep.angle(), 0.0f));
     CHECK(nearSheep.velocity().x > 0.0f);
     CHECK(near(farSheep.angle(), farAngle) && near(farSheep.speed(), kNormalSheepSpeed));
 
@@ -310,23 +314,77 @@ void testSleepingSheepIgnoreBark()
 {
     LevelData l = emptyLevel();
     l.dogs = {{500, 500}};
-    l.sheep = {{600, 500}};
+    l.sheep = {{600, 500}, {500, 600}};
     World w(l);
-    w.sheep()[0].sleeping = true;
-    const Vec2 v = w.sheep()[0].velocity();
+    // only the second sheep sleeps: the first still reacts (the Qt version checked only the first)
+    w.sheep()[1].sleeping = true;
+    const Vec2 v = w.sheep()[1].velocity();
     CHECK(w.bark());
-    CHECK(w.sheep()[0].velocity() == v);
+    CHECK(w.sheep()[1].velocity() == v);
+    CHECK(w.sheep()[0].speed() > kNormalSheepSpeed);
     w.tick();
-    CHECK(w.sheep()[0].position() == Vec2(600, 500));
+    CHECK(w.sheep()[1].position() == Vec2(500, 600));
+
+    // and the other way round
+    World w2(l);
+    w2.sheep()[0].sleeping = true;
+    CHECK(w2.bark());
+    CHECK(near(w2.sheep()[0].speed(), kNormalSheepSpeed));
+    CHECK(w2.sheep()[1].speed() > kNormalSheepSpeed);
+}
+
+void testStandingSheepReactToBark()
+{
+    LevelData l = emptyLevel();
+    l.dogs = {{500, 500}};
+    l.sheep = {{500, 380}, {500, 350}}; // above the dog, 120 and 150 away
+    World w(l);
+    for (Sheep& s : w.sheep())
+        s.setSpeedAndAngle(0.0f, 0.0f);
+    CHECK(w.bark());
+    // closer means faster, pushed straight up (away from the dog)
+    CHECK(near(w.sheep()[0].speed(), 250.0f / 120.0f * kNormalSheepSpeed));
+    CHECK(w.sheep()[0].speed() > w.sheep()[1].speed() && w.sheep()[1].speed() > 0.0f);
+    CHECK(near(w.sheep()[0].angle(), 90.0f));
+
+    // capped at the maximum sheep speed when very close
+    LevelData l2 = emptyLevel();
+    l2.dogs = {{500, 500}};
+    l2.sheep = {{530, 500}};
+    World w2(l2);
+    CHECK(w2.bark());
+    CHECK(near(w2.sheep()[0].speed(), kNormalDogSpeed));
+}
+
+// A sheep walking diagonally into a bush corner touches neither side head-on; it must turn
+// away instead of stopping as if blocked on all sides.
+void testCornerBounce()
+{
+    LevelData l = emptyLevel();
+    l.bushes = {{{600, 600}, 1}}; // collision area 608..632
+    l.sheep = {{570, 570}};       // collision area up to 595.45: diagonal gap of ~12.5
+    World w(l);
+    Sheep& s = w.sheep()[0];
+    s.setSpeedAndAngle(1.5f, 315.0f); // down-right, straight at the corner
+    const Rect bush = *w.elements()[0].collision;
+    bool bounced = false;
+    for (int i = 0; i < 48; ++i) {
+        w.tick();
+        CHECK(!s.collisionRect().intersects(bush));
+        CHECK(!s.blocked);
+        bounced |= !near(s.angle(), 315.0f);
+    }
+    CHECK(bounced);
+    CHECK(s.speed() > 0.0f);
 }
 
 void testBlockedSheepRetry()
 {
     // Sheep in a box only ~1 unit larger than its collision area (50.9): no direction leaves room
-    // for a step of 1.5. Fence collision rects span [pole + 3, pole + 10] (Qt offset), so the
-    // inside is [480, 532] for poles at 470 and 529.
+    // for a step of 1.5. Fence collision rects span pole +- 3.5, so the inside is [473.5, 525.5]
+    // for poles at 470 and 529.
     LevelData l = emptyLevel();
-    l.sheep = {{506, 506}};
+    l.sheep = {{499.5f, 499.5f}};
     l.fences = {{{470, 470}, {529, 470}}, {{470, 529}, {529, 529}}, {{470, 470}, {470, 529}}, {{529, 470}, {529, 529}}};
     World w(l);
     Sheep& s = w.sheep()[0];
@@ -342,7 +400,7 @@ void testBlockedSheepRetry()
         if (before && w.tickCount() % kBlockedSheepRetryTicks == 0)
             ++retries;
         CHECK(s.blocked);
-        CHECK(s.position().x > 480 && s.position().x < 532);
+        CHECK(s.position().x > 473.5f && s.position().x < 525.5f);
     }
     CHECK(retries == 3);
 }
@@ -403,6 +461,8 @@ int main()
     testBark();
     testBarkPower();
     testSleepingSheepIgnoreBark();
+    testStandingSheepReactToBark();
+    testCornerBounce();
     testBlockedSheepRetry();
     testLevelRunInvariants();
 

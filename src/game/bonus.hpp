@@ -77,6 +77,7 @@ private:
     float m_oldMaxBarkDist = 0.0f;
     float m_oldBarkIntensity = 0.0f;
     float m_oldMaxSheepSpeed = 0.0f;
+    float m_oldSheepSlowDown = 0.0f;
 };
 
 } // namespace game

@@ -231,9 +231,11 @@ void testPowerBarkMode()
     pickUpBonus(p, BonusMode::PowerBark);
     const Tuning& t = p.world().tuning;
     CHECK(t.maxBarkDist == 400.0f && t.barkIntensity == 500.0f && t.barkPowerReload == 1.0f);
+    CHECK(t.sheepSlowDown == 0.12f);
     waitForBonusEnd(p);
     CHECK(t.maxBarkDist == before.maxBarkDist && t.barkIntensity == before.barkIntensity);
     CHECK(t.barkPowerReload == before.barkPowerReload && t.maxSheepSpeed == before.maxSheepSpeed);
+    CHECK(t.sheepSlowDown == before.sheepSlowDown);
 }
 
 void testDrunkModeAndImage()

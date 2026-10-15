@@ -53,7 +53,7 @@ struct Tuning {
     float sheepSlowDown = 0.06f;    // per tick, after being barked at
     float barkPowerReload = 0.17f;  // per tick
     float maxBarkDist = 200.0f;
-    float barkIntensity = 250.0f;   // sheep speed factor: intensity / distance
+    float barkIntensity = 250.0f;   // bark adds intensity / distance * kNormalSheepSpeed to a sheep's speed
 };
 
 } // namespace game

@@ -163,11 +163,11 @@ void Bonus::activate(World& world, LevelTime& time)
         m_oldMaxBarkDist = t.maxBarkDist;
         m_oldBarkIntensity = t.barkIntensity;
         m_oldMaxSheepSpeed = t.maxSheepSpeed;
+        m_oldSheepSlowDown = t.sheepSlowDown;
         t.barkPowerReload = kPowerBarkReload;
         t.maxBarkDist = kPowerBarkDist;
         t.barkIntensity = kPowerBarkIntensity;
         t.maxSheepSpeed = kNormalDogSpeed;
-        // (not restored afterwards, as in the Qt version)
         t.sheepSlowDown = kPowerBarkSlowDown;
         break;
     case BonusMode::Count:
@@ -230,6 +230,8 @@ void Bonus::deactivate(World& world)
         t.maxBarkDist = m_oldMaxBarkDist;
         t.barkIntensity = m_oldBarkIntensity;
         t.maxSheepSpeed = m_oldMaxSheepSpeed;
+        // (the Qt version kept the faster slow-down for the rest of the level)
+        t.sheepSlowDown = m_oldSheepSlowDown;
         break;
     case BonusMode::Drunk:
     case BonusMode::TimeBonus:

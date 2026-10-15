@@ -21,8 +21,8 @@ Element makeFence(Vec2 from, Vec2 to)
     const float d = (kFenceWidth - kFenceSlatWidth) / 2.0f;
     e.vertical = std::fabs(to.x - from.x) < std::fabs(to.y - from.y);
 
-    // Note: like in the Qt version, the collision rect starts at pole centre + d, not at the
-    // slat (pole centre - kFenceSlatWidth/2), i.e. it is offset by kFenceWidth/2 from the graphics.
+    // Collision area: as wide as the slat, from the outer edge of the first pole to the outer
+    // edge of the last one. (The Qt version had it offset by kFenceWidth/2 from the graphics.)
     if (e.vertical) {
         const float poleDist = std::fabs(to.y - from.y); // between first and last pole centre
         const float height = poleDist + kFenceWidth;
@@ -30,7 +30,7 @@ Element makeFence(Vec2 from, Vec2 to)
         const float yStart = std::min(from.y, to.y);
         const Vec2 topLeft{xStart - kFenceWidth / 2.0f, yStart - kFenceWidth / 2.0f};
         e.bounds = {topLeft, {kFenceWidth, height}};
-        e.collision = Rect(xStart + d, yStart + d, kFenceSlatWidth, height);
+        e.collision = Rect(xStart - kFenceSlatWidth / 2.0f, topLeft.y, kFenceSlatWidth, height);
         e.slat = {topLeft.x + d, yStart, kFenceSlatWidth, poleDist};
 
         const int segments = std::max(1, static_cast<int>(poleDist / kMinFenceSegmentLength));
@@ -44,7 +44,7 @@ Element makeFence(Vec2 from, Vec2 to)
         const float yStart = from.y;
         const Vec2 topLeft{xStart - kFenceWidth / 2.0f, yStart - kFenceWidth / 2.0f};
         e.bounds = {topLeft, {width, kFenceWidth}};
-        e.collision = Rect(xStart + d, yStart + d, width, kFenceSlatWidth);
+        e.collision = Rect(topLeft.x, yStart - kFenceSlatWidth / 2.0f, width, kFenceSlatWidth);
         e.slat = {xStart, topLeft.y + d, poleDist, kFenceSlatWidth};
 
         const int segments = std::max(1, static_cast<int>(poleDist / kMinFenceSegmentLength));
