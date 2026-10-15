@@ -5,6 +5,10 @@
 #include "gfx/renderer.hpp"
 #include "gfx/texture_cache.hpp"
 
+#include <algorithm>
+#include <cmath>
+#include <cstdint>
+
 using core::Color;
 using core::Rect;
 using core::Vec2;
@@ -57,6 +61,26 @@ void drawElements(gfx::Renderer& r, gfx::TextureCache& textures, const std::vect
             drawElement(r, textures, e);
 }
 
+// Ring with soft edges, like the Qt version's ring pen with a blur effect: the cross-section of a
+// ring of `width` blurred with a Gaussian (sigma = blur / 2), drawn as thin concentric rings.
+void drawBlurredRing(gfx::Renderer& r, Vec2 center, float radius, float width, float blur, Color color)
+{
+    const float sigma = std::max(0.5f, blur / 2.0f);
+    const float step = 2.0f;
+    const float reach = width / 2.0f + 2.0f * sigma;
+    const float scale = 1.0f / (sigma * std::sqrt(2.0f));
+    for (float d = -reach + step / 2.0f; d < reach; d += step) {
+        // fraction of the blurred ring at distance d from its centre line
+        const float coverage =
+            0.5f * (std::erf((d + width / 2.0f) * scale) - std::erf((d - width / 2.0f) * scale));
+        const auto a = static_cast<std::uint8_t>(std::lround(static_cast<float>(color.a) * coverage));
+        const float ringRadius = radius + d;
+        if (a == 0 || ringRadius <= step / 2.0f)
+            continue;
+        r.drawEllipse({center - Vec2(ringRadius, ringRadius), {2 * ringRadius, 2 * ringRadius}}, color.withAlpha(a), step);
+    }
+}
+
 void drawCharacter(gfx::Renderer& r, const gfx::Texture& tex, const game::Character& c, float alpha)
 {
     const Vec2 mid = c.previousPosition() + (c.position() - c.previousPosition()) * alpha;
@@ -68,9 +92,10 @@ void drawCharacter(gfx::Renderer& r, const gfx::Texture& tex, const game::Charac
 } // namespace
 
 void drawWorld(gfx::Renderer& r, gfx::TextureCache& textures, const game::World& world, float alpha,
-               bool showCollisionRects)
+               bool showCollisionRects, bool drawBackground)
 {
-    r.fillRect({{0, 0}, world.size()}, kBackgroundColor);
+    if (drawBackground)
+        r.fillRect({{0, 0}, world.size()}, kBackgroundColor);
 
     // same stacking as Level::addItemsToScene(): layers 0-1, dogs, sheep, layer 2 (exits), layer 3
     drawElements(r, textures, world.elements(), 0, 1);
@@ -81,10 +106,9 @@ void drawWorld(gfx::Renderer& r, gfx::TextureCache& textures, const game::World&
             drawCharacter(r, textures.get("sheep01"), s, alpha);
     drawElements(r, textures, world.elements(), 2, 3);
 
-    // (the Qt version blurred the wave; a faint wide ring looks similar enough for now)
+    // faint, blurred ring (Qt: ring pen with a QGraphicsBlurEffect of radius 10)
     for (const game::BarkWave& w : world.barkWaves())
-        r.drawEllipse({w.center - Vec2(w.radius, w.radius), {2 * w.radius, 2 * w.radius}}, kBarkWaveColor,
-                      game::kBarkWaveWidth);
+        drawBlurredRing(r, w.center, w.radius, game::kBarkWaveWidth, 10.0f, kBarkWaveColor);
 
     if (showCollisionRects) {
         const Color col{0xff, 0xb4, 0x39, 100};

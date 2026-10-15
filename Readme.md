@@ -52,7 +52,7 @@ click or key press. The level editor is not available on the web.
 
 ### Android
 
-Android SDK with NDK 25.1.8937393 and CMake 3.22.1 (SDK Manager), and JDK 17 (Android Studio's bundled JBR works).
+Android SDK with NDK 28.2.13676358 (Gradle downloads it if missing) and CMake 3.22.1 (SDK Manager), and JDK 17 (Android Studio's bundled JBR works).
 Gradle builds the native code through the top-level `CMakeLists.txt`; SDL's Java glue is compiled straight from
 `external/SDL/android-project`. Or simply open the repo root in Android Studio.
 

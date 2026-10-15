@@ -14,7 +14,7 @@ val keystoreProperties = Properties().apply {
 android {
     namespace = "ch.erglim.sheepdog"
     compileSdk = 35
-    ndkVersion = "25.1.8937393"
+    ndkVersion = "28.2.13676358" // as in SDL's android-project
 
     defaultConfig {
         applicationId = "ch.erglim.sheepdog"

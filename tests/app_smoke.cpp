@@ -207,6 +207,8 @@ int main(int, char**)
         key.key.key = SDLK_SPACE;
         h.send(key);
         CHECK(audio && audio->playCount() == soundsBefore + 1);
+        h.ticks(3); // bark wave on its way out
+        h.screenshot("smoke_4b_bark_wave.png");
         ui::Hud hud;
         hud.layout(kScreen);
         h.click({50, 50}); // pause button

@@ -70,11 +70,12 @@ float Renderer::toScreen(float length) const { return m_camera ? length * m_came
 
 void Renderer::drawTexture(const Texture& texture, const Rect& dst, const SpriteParams& params)
 {
-    if (!texture.valid() || params.opacity <= 0.0f)
+    const float opacity = params.opacity * m_opacity;
+    if (!texture.valid() || opacity <= 0.0f)
         return;
 
     SDL_Texture* tex = texture.sdl();
-    SDL_SetTextureAlphaModFloat(tex, params.opacity);
+    SDL_SetTextureAlphaModFloat(tex, opacity);
     SDL_SetTextureColorModFloat(tex, params.tint.r / 255.0f, params.tint.g / 255.0f, params.tint.b / 255.0f);
 
     const SDL_FRect d = toSdl(toScreen(dst));
@@ -96,7 +97,7 @@ void Renderer::drawTexture(const Texture& texture, const Rect& dst, const Sprite
 void Renderer::fillRect(const Rect& r, Color color)
 {
     const SDL_FRect d = toSdl(toScreen(r));
-    SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+    SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, static_cast<Uint8>(color.a * m_opacity));
     SDL_RenderFillRect(m_renderer, &d);
 }
 
@@ -138,7 +139,8 @@ void Renderer::flushTriangles(Color color)
 {
     if (m_triangles.empty())
         return;
-    const SDL_FColor c = toSdl(color);
+    SDL_FColor c = toSdl(color);
+    c.a *= m_opacity;
     m_vertices.clear();
     m_vertices.reserve(m_triangles.size());
     for (const Vec2& p : m_triangles)

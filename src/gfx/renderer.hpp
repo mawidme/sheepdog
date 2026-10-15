@@ -41,6 +41,10 @@ public:
     // nullptr switches to screen space (UI). The camera must outlive its use.
     void setCamera(const Camera* camera) { m_camera = camera; }
 
+    // multiplies the opacity of everything drawn afterwards (e.g. 0.5 for a translucent copy)
+    void setOpacity(float opacity) { m_opacity = opacity; }
+    float opacity() const { return m_opacity; }
+
     // clip in screen coordinates, nullptr disables clipping
     void setClipRect(const core::Rect* screenRect);
 
@@ -63,6 +67,7 @@ private:
 
     SDL_Renderer*           m_renderer;
     const Camera*           m_camera = nullptr;
+    float                   m_opacity = 1.0f;
     std::vector<core::Vec2> m_triangles;
     std::vector<SDL_Vertex> m_vertices;
 };

@@ -752,6 +752,20 @@ void GameApp::draw(float alpha, bool present)
             r.setCamera(&m_camera);
             drawWorld(r, m_textures, m_play->world(), alpha, m_showCollisionRects);
             drawBonus();
+            if (m_play->bonus().active(BonusMode::Drunk)) {
+                // drunk bonus: a half transparent copy of the view wobbles on top
+                // (Qt: MyGraphicsScene::handleDrunkMode(), offset in screen pixels per frame)
+                const float f = static_cast<float>(m_play->world().tickCount()) + alpha;
+                const Vec2 wobble{12.0f * std::cos(f / 10.0f), 5.0f * std::cos(f / 14.0f)};
+                gfx::Camera ghost = m_camera;
+                ghost.position -= wobble / ghost.zoom;
+                r.setCamera(&ghost);
+                r.setOpacity(0.5f);
+                drawWorld(r, m_textures, m_play->world(), alpha, false, false);
+                drawBonus();
+                r.setOpacity(1.0f);
+                r.setCamera(&m_camera);
+            }
             r.setCamera(nullptr);
             m_hud.layout(r.screenSize());
             m_hud.draw(ui, *m_play, m_paused);
