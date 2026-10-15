@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Converts level files from the old XML format (Qt version) to the JSON format
-described in src/game/level_data.hpp.
+described in src/game/level_data.hpp, e.g. own levels made with the old editor:
 
-    python tools/convert_levels_xml_to_json.py levels/*.xml --out assets/levels
+    python tools/convert_levels_xml_to_json.py old_levels/*.xml --out converted
 
 Coordinates keep their meaning (fence pole centres, top-left corners of props and
 water, centres of dogs and sheep), so converted levels play exactly as before.

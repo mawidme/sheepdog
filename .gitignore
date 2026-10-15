@@ -44,3 +44,8 @@ sheepdog.pro.user.*
 
 # Machine-specific SDK paths
 local.properties
+
+# Android release signing (never commit keys)
+keystore.properties
+*.jks
+*.keystore

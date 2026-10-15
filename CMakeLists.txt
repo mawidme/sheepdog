@@ -6,13 +6,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-option(SHEEPDOG_LEGACY_QT "Build the legacy Qt version instead of the SDL one" OFF)
-
-if(SHEEPDOG_LEGACY_QT)
-    include(cmake/legacy_qt.cmake)
-    return()
-endif()
-
 # --- SDL3 (git submodule, see external/SDL) --------------------------------
 set(SDL_SHARED OFF CACHE BOOL "" FORCE)
 set(SDL_STATIC ON CACHE BOOL "" FORCE)
@@ -84,6 +77,9 @@ set(SHEEPDOG_SOURCES
     src/ui/ui.cpp
     src/world_view.cpp
 )
+if(WIN32)
+    list(APPEND SHEEPDOG_SOURCES cmake/windows/sheepdog.rc)
+endif()
 if(ANDROID)
     # SDLActivity loads the game from libmain.so
     add_library(sheepdog SHARED ${SHEEPDOG_SOURCES})
@@ -98,8 +94,13 @@ target_compile_options(sheepdog PRIVATE ${SHEEPDOG_WARNINGS})
 # Android packages assets/ via Gradle (app/build.gradle.kts), the others here.
 set(SHEEPDOG_ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 if(EMSCRIPTEN)
-    target_link_options(sheepdog PRIVATE "--preload-file=${SHEEPDOG_ASSETS_DIR}@/assets")
-    set_property(TARGET sheepdog APPEND PROPERTY LINK_DEPENDS ${SHEEPDOG_ASSETS_DIR})
+    # only the 2x images and font (the game caps the image scale at 2x on the web) to keep the download small
+    foreach(dir img/2x fonts/2x levels sfx)
+        target_link_options(sheepdog PRIVATE "--preload-file=${SHEEPDOG_ASSETS_DIR}/${dir}@/assets/${dir}")
+    endforeach()
+    target_link_options(sheepdog PRIVATE "--shell-file=${CMAKE_CURRENT_SOURCE_DIR}/cmake/web/shell.html")
+    set_property(TARGET sheepdog APPEND PROPERTY LINK_DEPENDS
+        ${SHEEPDOG_ASSETS_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/web/shell.html)
 elseif(IOS)
     file(GLOB_RECURSE SHEEPDOG_ASSET_FILES ${SHEEPDOG_ASSETS_DIR}/*)
     foreach(asset IN LISTS SHEEPDOG_ASSET_FILES)
@@ -191,7 +192,12 @@ if(IOS)
         XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"   # iPhone + iPad
         XCODE_ATTRIBUTE_CODE_SIGN_STYLE Automatic
         XCODE_ATTRIBUTE_DEVELOPMENT_TEAM "${SHEEPDOG_IOS_TEAM_ID}"
+        XCODE_ATTRIBUTE_ASSETCATALOG_COMPILER_APPICON_NAME AppIcon
     )
+    # app icon (generated: tools/bake_icons.py)
+    set(SHEEPDOG_IOS_ASSETS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ios/Assets.xcassets)
+    target_sources(sheepdog PRIVATE ${SHEEPDOG_IOS_ASSETS})
+    set_source_files_properties(${SHEEPDOG_IOS_ASSETS} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 endif()
 
 if(WIN32)

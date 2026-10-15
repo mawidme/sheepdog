@@ -1,0 +1,2 @@
+// Windows executable icon (generated: tools/bake_icons.py)
+IDI_ICON1 ICON "sheepdog.ico"

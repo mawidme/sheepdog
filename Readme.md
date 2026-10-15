@@ -1,19 +1,33 @@
-# BUILDING (SDL port, branch refactor/no-qt)
+# Sheepdog
 
-The SDL3 port is built with CMake. SDL is a git submodule pinned to a release tag.
+Herd the sheep into the exits before the time runs out: walk the dog around them and bark to drive them along.
+Bonus boxes give you more time, a stronger bark, sleeping or speedy sheep, or make the dog drunk. Comes with a
+level editor (desktop).
+
+C++20 with [SDL3](https://libsdl.org) for windowing, input, rendering and audio. Runs on Windows (and other desktops),
+Android, the web (Emscripten) and iOS (not tested yet).
+
+## Getting the code
+
+SDL is a git submodule pinned to a release tag:
 
 ```
-git clone --recurse-submodules <repo>     # or: git submodule update --init
+git clone --recurse-submodules <repo>     # or, in an existing clone: git submodule update --init
+```
+
+## Building
+
+### Desktop
+
+CMake 3.22+ and a C++20 compiler (e.g. Visual Studio 2022+, which also brings CMake and Ninja).
+
+```
 cmake -S . -B build/win
-cmake --build build/win --config Debug
-ctest --test-dir build/win -C Debug        # unit tests + app smoke test (desktop builds only)
+cmake --build build/win --config Release      # build/win/Release/sheepdog.exe (assets are copied next to it)
+ctest --test-dir build/win -C Release         # unit tests and the app smoke test
 ```
 
-Code layout: `src/core` holds platform-independent utilities (vectors, rects, colours, strings, random) with no SDL
-dependency; `src/gfx` is the 2D rendering layer on top of `SDL_Renderer` (textures, sprites, shapes, camera).
-Both are unit tested in `tests/` (gfx tests cover the SDL-free parts: camera maths and shape tessellation).
-
-## Web (Emscripten)
+### Web (Emscripten)
 
 Install emsdk once (outside the repo, ~1 GB):
 
@@ -24,130 +38,108 @@ emsdk install latest
 emsdk activate latest
 ```
 
-Build (in a shell where `emsdk_env` was sourced; needs Ninja, e.g. the one bundled with Visual Studio):
+Build in a shell where `emsdk_env` was run (needs Ninja, e.g. the one bundled with Visual Studio):
 
 ```
 emcmake cmake -S . -B build/web -G Ninja -DCMAKE_BUILD_TYPE=Release
 cmake --build build/web
-python -m http.server -d build/web 8000   # then open http://localhost:8000/sheepdog.html
+python -m http.server -d build/web 8000     # then open http://localhost:8000/sheepdog.html
 ```
 
-The page must be served over http; opening the .html file directly does not work.
+Deploy `sheepdog.html`, `.js`, `.wasm` and `.data` together; the page must be served over http(s). The web build
+packages only the 2x images to keep the download small (about 4 MB). Browsers start sound only after the first
+click or key press. The level editor is not available on the web.
 
-## Android
+### Android
 
-Requires Android Studio (or the Android SDK) with NDK 25.1.8937393 and CMake 3.22.1 installed via the SDK Manager, and a JDK 17
-(Android Studio's bundled JBR works). Gradle builds the native code through the top-level `CMakeLists.txt`; SDL's Java glue
-is compiled straight from `external/SDL/android-project`, so there is nothing to copy.
-
-```
-gradlew assembleDebug                      # APK in app/build/outputs/apk/debug/
-gradlew installDebug                       # build + install on a running emulator/device
-```
-
-Or open the repo root in Android Studio. `local.properties` points to the SDK; adjust `sdk.dir` if yours lives elsewhere.
-
-## iOS (untested so far)
-
-Requires a Mac with Xcode and CMake. Generate an Xcode project:
+Android SDK with NDK 25.1.8937393 and CMake 3.22.1 (SDK Manager), and JDK 17 (Android Studio's bundled JBR works).
+Gradle builds the native code through the top-level `CMakeLists.txt`; SDL's Java glue is compiled straight from
+`external/SDL/android-project`. Or simply open the repo root in Android Studio.
 
 ```
-cmake -S . -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0       -DSHEEPDOG_IOS_TEAM_ID=<your team id>
+gradlew assembleDebug          # app/build/outputs/apk/debug/app-debug.apk
+gradlew installDebug           # build and install on a running emulator / device
+gradlew assembleRelease        # release APK (signed if keystore.properties exists, see below)
+gradlew bundleRelease          # app bundle (.aab) for Google Play
+```
+
+`local.properties` (not in git) points to the SDK; Android Studio creates it, or write `sdk.dir=...` yourself.
+
+**Release signing.** Create a key once and keep it safe (losing it means you can't update a published app):
+
+```
+keytool -genkeypair -v -keystore sheepdog-release.jks -alias sheepdog -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Then create `keystore.properties` in the repo root (both files are ignored by git):
+
+```
+storeFile=sheepdog-release.jks
+storePassword=...
+keyAlias=sheepdog
+keyPassword=...
+```
+
+### iOS
+
+A Mac with Xcode and CMake. Generate an Xcode project:
+
+```
+cmake -S . -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DSHEEPDOG_IOS_TEAM_ID=<team id>
 open build/ios/sheepdog.xcodeproj
 ```
 
 Select the `sheepdog` scheme and a device or simulator, then run. The team ID is shown in Xcode under
-Settings > Accounts. With a free Apple ID (personal team), installs on your own device expire after 7 days, and the
-bundle ID may need to be made unique: `-DSHEEPDOG_BUNDLE_ID=ch.erglim.sheepdog.<something>`.
-TestFlight requires a paid Apple Developer Program membership.
+Settings > Accounts. With a free Apple ID (personal team) installs on your own device expire after 7 days, and the
+bundle ID may need to be unique: `-DSHEEPDOG_BUNDLE_ID=ch.erglim.sheepdog.<something>`. TestFlight and the App Store
+require a paid Apple Developer Program membership.
 
-## Images
-
-The SVGs in `img/` are the source art. The game uses PNGs baked from them at three scales (1x, 2x, 4x texels per
-logical unit) in `assets/img/<scale>x/`; the game picks the scale matching the display density at startup.
-The baked PNGs are committed, so building does not need any SVG tooling.
-
-After adding or changing an SVG, re-bake all PNGs with [resvg](https://github.com/linebender/resvg) and commit them:
-
-```
-cmake -P tools/bake_images.cmake                       # finds resvg on PATH or in %USERPROFILE%\tools\resvg
-cmake -DRESVG=/path/to/resvg -P tools/bake_images.cmake  # or point to it explicitly
-```
-
-resvg: on Windows unzip `resvg-win64.zip` from the GitHub releases (v0.47.0 is the latest with a Windows build) to
-`%USERPROFILE%\tools\resvg`; on macOS `brew install resvg`. A few SVGs contain text in the "Aharoni" font; if it is not
-installed, resvg falls back to a default font.
-
-## Levels
-
-Built-in levels are JSON files in `assets/levels/levelN.json`; the format is documented in
-`src/game/level_data.hpp`. They were converted from the old XML files in `levels/` (still used by the legacy Qt build)
-with `python tools/convert_levels_xml_to_json.py levels/*.xml --out assets/levels`, which also works for old user levels.
-
-## Font
-
-UI text uses a bitmap font baked from `tools/fonts/DejaVuSans-Bold.ttf` into `assets/fonts/<scale>x/` (atlas PNG +
-metrics JSON, committed; licence in `assets/fonts/LICENSE-DejaVu.txt`). Re-bake after changing font, size or
-characters (needs Pillow: `pip install pillow`):
-
-```
-python tools/bake_font.py
-```
-
-## Controls
+## Playing
 
 - Mouse / touch: tap to walk there, drag to steer, tap the dog or the bark button to bark, two fingers to zoom
 - Keyboard: arrows / WASD walk, space barks, P or Esc pauses (Android: back)
-- Mouse wheel zooms; M mutes the sound; F3 shows collision areas
-- Level editor (desktop only, from the main menu): tools on the left (fence, bush, tree, water, exit, dog, sheep),
-  actions on the right (undo, eraser, pan, load, save, test play, leave). Drag to draw fences and water or to move
-  what was just placed; right/middle mouse button pans with any tool; Ctrl+Z undoes. Levels are saved as own levels.
-- User levels are read from the per-user data folder (`SDL_GetPrefPath`, e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json`)
+- Mouse wheel zooms, M mutes the sound, F3 shows collision areas
+- Own levels (made with the editor) live in the per-user data folder: `SDL_GetPrefPath("erglim", "sheepdog")/levels/`,
+  e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json` on Windows
 
-## Sounds
+**Level editor** (desktop, from the main menu): tools on the left place fences, bushes, trees, water, exits, the dog
+and sheep; on the right are undo, eraser, pan, load, save, test play and leave. Drag to draw fences and water or to
+move what you just placed; the right or middle mouse button pans with any tool, Ctrl+Z undoes. A level needs a dog,
+at least one sheep and an exit.
 
-Sound effects are WAV files in `assets/sfx/` (any PCM format; converted to 44.1 kHz stereo float when loaded) and
-are mixed by the game itself on top of SDL's audio stream (`src/audio`).
+## Code layout
 
-The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
+| Folder | Contents |
+|---|---|
+| `src/core` | vectors, rects, colours, strings, random numbers; no SDL |
+| `src/game` | game logic and data, no SDL: levels (JSON), simulation (`World`), level rules (`LevelPlay`, bonuses), editor logic |
+| `src/gfx` | 2D rendering on `SDL_Renderer`: textures, sprites, shapes, camera, bitmap font |
+| `src/audio` | sound effects: software mixer on an SDL audio stream |
+| `src/ui` | menus, message boxes, info bar, level chooser, editor toolbar |
+| `src/platform` | asset and user file access per platform |
+| `src/game_app.*`, `src/main.cpp` | game flow, input, SDL main callbacks |
+| `tests/` | unit tests per module, and `app_smoke` running the whole app offscreen with scripted input |
+| `assets/` | everything the game loads at runtime (packaged per platform) |
+| `img/`, `tools/` | source art and the tools that bake it into `assets/` |
+| `app/`, `cmake/` | Android project; iOS, Windows and web packaging files |
 
----
+The simulation runs at a fixed 24 ticks per second like the original game; drawing interpolates between ticks.
 
-# REQUIREMENTS
+## Assets
 
-* Qt
-- download qt 5 sources zip: https://www.qt.io/offline-installers
-  - unzip content of qt-everywhere-src-5.xx.x sub-dir to c:\qt\src
-- create build dir: `mkdir c:\qt\build`
-- configure qt5
-  - https://doc.qt.io/qt-5/android-building.html
-    - JDK: from Android Studio
-    - MinGW: LLVM-MinGW ucrt-x86_64, https://github.com/mstorsjo/llvm-mingw/releases
-    - Perl: http://strawberryperl.com/
-  - run Configure.ps1 from repo root (adjusting paths first if required)
-    - first used: ..\configure.bat -platform win32-g++ -xplatform android-clang -prefix c:\qt -nomake tests -nomake examples -android-sdk $sdkPath -android-ndk $ndkPath -android-ndk-host windows-x86_64 -no-warnings-are-errors
-    - in case this fails due to "error: ‘numeric_limits’ is not a class template": add these 3 lines at the top of qtbase/src/corelib/global/qglobal.h:
-      #ifdef __cplusplus
-      #include <limits>
-      #endif
-    - in case this fails due to "unknown argument: '-fno-keep-inline-dllexport'": comment argument in qmake.conf resp. Makefile (use file search)
-- configure qt6
-  - https://wiki.qt.io/Building_Qt_6_from_Git
-  - https://doc.qt.io/qt-6.5/android-building.html
-  - open console: x64 Native Tools Command Prompt for VS 2022
-  - mkdir c:\qt\qt6-windows-build
-  - cd c:\qt\qt6-windows-build
-  - c:\qt6-src\configure.bat -prefix C:\qt\qt6-windows
-  - cmake --build .
-  - cmake --install .
-  - run ConfigureQt6.ps1 from repo root (adjusting paths first if required)
-- cmake --build . --parallel
-- build
-  - qt5: mingw32-make.exe -j4
-  - qt6: cmake --build . --parallel
-- install
-  - qt5: mingw32-make.exe install
-  - qt6: cmake --install .
+Generated files are committed, so building needs none of these tools. Re-run them after changing the sources.
 
-* Qt Creator open source?
-https://download.qt.io/official_releases/qtcreator/12.0/12.0.2/qt-creator-opensource-windows-x86_64-12.0.2.exe.mirrorlist?__hstc=45788219.64f02eb7ed6ba237641c1ba3ab97ff53.1689838104787.1689838104787.1689838104787.1&__hssc=45788219.1.1689838104787&__hsfp=783877104
+- **Images**: SVGs in `img/` are baked with [resvg](https://github.com/linebender/resvg) to PNGs at 1x, 2x and 4x in
+  `assets/img/<scale>x/`; the game picks the scale matching the display at startup.
+  `cmake -P tools/bake_images.cmake` (finds resvg on PATH or in `%USERPROFILE%\tools\resvg`; or pass
+  `-DRESVG=<path>`). On Windows unzip `resvg-win64.zip` from the GitHub releases (v0.47.0 is the latest with a
+  Windows build); on macOS `brew install resvg`. Some SVGs use the "Aharoni" font; resvg falls back to a default font
+  if it is missing.
+- **App icons**: `python tools/bake_icons.py` renders `img/icon.svg` for Android (adaptive icon), iOS (asset catalog),
+  Windows (.ico) and the desktop window icon. Needs resvg and Pillow (`pip install pillow`).
+- **Font**: `python tools/bake_font.py` bakes `tools/fonts/DejaVuSans-Bold.ttf` into bitmap atlases in
+  `assets/fonts/<scale>x/` (licence: `assets/fonts/LICENSE-DejaVu.txt`). Needs Pillow.
+- **Levels**: JSON files in `assets/levels/levelN.json`, format documented in `src/game/level_data.hpp`.
+  `level0` is the main menu background. Levels from the old Qt version (XML) can be converted with
+  `python tools/convert_levels_xml_to_json.py old/*.xml --out <folder>`.
+- **Sounds**: WAV files in `assets/sfx/` (any PCM format; converted when loaded).

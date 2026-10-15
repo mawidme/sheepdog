@@ -9,6 +9,7 @@
 #include "game/constants.hpp"
 #include "gfx/renderer.hpp"
 #include "gfx/texture_cache.hpp"
+#include "platform/assets.hpp"
 
 #include <cmath>
 #include <memory>
@@ -65,6 +66,10 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
 
 #if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_IOS)
     constexpr SDL_WindowFlags kWindowFlags = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+#elif defined(SDL_PLATFORM_EMSCRIPTEN)
+    // canvas fills the browser window and follows its size
+    constexpr SDL_WindowFlags kWindowFlags =
+        SDL_WINDOW_RESIZABLE | SDL_WINDOW_FILL_DOCUMENT | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 #else
     constexpr SDL_WindowFlags kWindowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 #endif
@@ -77,6 +82,14 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
         return SDL_APP_FAILURE;
     }
     SDL_SetRenderVSync(app->renderer, 1);
+
+#if !defined(SDL_PLATFORM_ANDROID) && !defined(SDL_PLATFORM_IOS) && !defined(SDL_PLATFORM_EMSCRIPTEN)
+    // window / task bar icon on desktop
+    if (SDL_Surface* icon = SDL_LoadPNG(platform::assetPath("icon.png").c_str())) {
+        SDL_SetWindowIcon(app->window, icon);
+        SDL_DestroySurface(icon);
+    }
+#endif
     updateLogicalSize(*app);
 
     app->gfx = std::make_unique<gfx::Renderer>(app->renderer);
@@ -85,7 +98,12 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
     int pixelW = 0, pixelH = 0;
     SDL_GetCurrentRenderOutputSize(app->renderer, &pixelW, &pixelH);
     const float pixelsPerUnit = static_cast<float>(pixelH) / app->gfx->screenSize().y;
-    const gfx::ImageScale scale = gfx::chooseImageScale(pixelsPerUnit);
+    gfx::ImageScale scale = gfx::chooseImageScale(pixelsPerUnit);
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    // only the 2x images are packaged for the web (smaller download)
+    if (scale == gfx::ImageScale::X4)
+        scale = gfx::ImageScale::X2;
+#endif
     SDL_Log("output %dx%d px, %.2f px per unit -> %dx images", pixelW, pixelH, pixelsPerUnit, static_cast<int>(scale));
     app->textures = std::make_unique<gfx::TextureCache>(app->renderer, scale);
 

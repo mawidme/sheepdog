@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Sheepdog</title>
+  <style>
+    html, body { margin: 0; height: 100%; background: #006400; overflow: hidden; }
+    canvas { display: block; width: 100vw; height: 100vh; touch-action: none; outline: none; }
+    #status { position: absolute; top: 45%; width: 100%; text-align: center;
+              color: #fff; font: bold 22px sans-serif; opacity: 0.7; }
+  </style>
+</head>
+<body>
+  <div id="status">loading...</div>
+  <canvas id="canvas" tabindex="-1" oncontextmenu="event.preventDefault()"></canvas>
+  <script>
+    var statusElement = document.getElementById('status');
+    var Module = {
+      canvas: document.getElementById('canvas'),
+      // called by the Emscripten runtime with download progress, '' when done
+      setStatus: function (text) {
+        statusElement.textContent = text ? 'loading...' : '';
+        statusElement.style.display = text ? 'block' : 'none';
+      },
+    };
+    window.onerror = function () { statusElement.textContent = 'sorry, something went wrong'; statusElement.style.display = 'block'; };
+  </script>
+  {{{ SCRIPT }}}
+</body>
+</html>
