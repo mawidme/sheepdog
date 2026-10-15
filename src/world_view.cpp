@@ -49,9 +49,10 @@ void drawElement(gfx::Renderer& r, gfx::TextureCache& textures, const Element& e
     }
 }
 
-void drawElements(gfx::Renderer& r, gfx::TextureCache& textures, const game::World& world, int minLayer, int maxLayer)
+void drawElements(gfx::Renderer& r, gfx::TextureCache& textures, const std::vector<Element>& elements, int minLayer,
+                  int maxLayer)
 {
-    for (const Element& e : world.elements())
+    for (const Element& e : elements)
         if (e.layer >= minLayer && e.layer <= maxLayer)
             drawElement(r, textures, e);
 }
@@ -72,13 +73,13 @@ void drawWorld(gfx::Renderer& r, gfx::TextureCache& textures, const game::World&
     r.fillRect({{0, 0}, world.size()}, kBackgroundColor);
 
     // same stacking as Level::addItemsToScene(): layers 0-1, dogs, sheep, layer 2 (exits), layer 3
-    drawElements(r, textures, world, 0, 1);
+    drawElements(r, textures, world.elements(), 0, 1);
     for (const game::Dog& d : world.dogs())
         drawCharacter(r, textures.get(core::format("dog%02d", d.animationStep() + 1)), d, alpha);
     for (const game::Sheep& s : world.sheep())
         if (!s.rescued)
             drawCharacter(r, textures.get("sheep01"), s, alpha);
-    drawElements(r, textures, world, 2, 3);
+    drawElements(r, textures, world.elements(), 2, 3);
 
     // (the Qt version blurred the wave; a faint wide ring looks similar enough for now)
     for (const game::BarkWave& w : world.barkWaves())
@@ -96,4 +97,28 @@ void drawWorld(gfx::Renderer& r, gfx::TextureCache& textures, const game::World&
             if (!s.rescued)
                 r.fillRect(s.collisionRect(), col);
     }
+}
+
+void drawLevelData(gfx::Renderer& r, gfx::TextureCache& textures, const game::LevelData& level)
+{
+    std::vector<Element> elements;
+    for (const game::FenceData& f : level.fences)
+        elements.push_back(game::makeFence(f.from, f.to));
+    for (const game::WaterData& w : level.water)
+        if (auto e = game::makeWater(w.from, w.to, w.style))
+            elements.push_back(*e);
+    for (const game::PropData& b : level.bushes)
+        elements.push_back(game::makeBush(b.pos, b.style));
+    for (const game::PropData& t : level.trees)
+        elements.push_back(game::makeTree(t.pos, t.style));
+    for (const game::PropData& e : level.exits)
+        elements.push_back(game::makeExit(e.pos, e.style));
+
+    drawElements(r, textures, elements, 0, 1);
+    for (Vec2 d : level.dogs)
+        drawCharacter(r, textures.get("dog01"), game::Dog(d), 1.0f);
+    // facing down (270 degrees), like the images
+    for (Vec2 s : level.sheep)
+        drawCharacter(r, textures.get("sheep01"), game::Sheep(s, 0.0f, 270.0f, 0), 1.0f);
+    drawElements(r, textures, elements, 2, 3);
 }

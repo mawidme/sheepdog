@@ -32,6 +32,38 @@ constexpr float kOverviewSeconds = game::kOverviewSecondsMobile;
 constexpr float kOverviewSeconds = game::kOverviewSecondsDesktop;
 #endif
 
+// the level editor needs a mouse and a writable file system
+#if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_IOS) || defined(SDL_PLATFORM_EMSCRIPTEN)
+constexpr bool kEditorAvailable = false;
+#else
+constexpr bool kEditorAvailable = true;
+#endif
+
+game::EditTool toEditTool(ui::EditorButton b)
+{
+    switch (b) {
+    case ui::EditorButton::Eraser:
+        return game::EditTool::Eraser;
+    case ui::EditorButton::Pan:
+        return game::EditTool::Pan;
+    default:
+        // Fence .. Sheep are in the same order
+        return static_cast<game::EditTool>(static_cast<int>(b));
+    }
+}
+
+ui::EditorButton toEditorButton(game::EditTool t)
+{
+    switch (t) {
+    case game::EditTool::Eraser:
+        return ui::EditorButton::Eraser;
+    case game::EditTool::Pan:
+        return ui::EditorButton::Pan;
+    default:
+        return static_cast<ui::EditorButton>(static_cast<int>(t));
+    }
+}
+
 const char* modeImageName(BonusMode m)
 {
     static const char* names[] = {"bonus/drunkMode", "bonus/sheepSleepMode", "bonus/sheepOnSpeedMode",
@@ -122,26 +154,36 @@ void GameApp::showMenu()
     }
 
     std::vector<std::string> buttons{"play"};
-    const bool ownLevels = levelCount(LevelSource::User) > 0;
-    if (ownLevels)
+    if (levelCount(LevelSource::User) > 0)
         buttons.push_back("play own levels");
-    showDialog("", buttons, [this, ownLevels](int button) {
-        if (button == 0)
+    if (kEditorAvailable)
+        buttons.push_back("editor");
+    showDialog("", buttons, [this, buttons](int button) {
+        const std::string& b = buttons[static_cast<size_t>(button)];
+        if (b == "play")
             showChooser(LevelSource::BuiltIn);
-        else if (button == 1 && ownLevels)
+        else if (b == "play own levels")
             showChooser(LevelSource::User);
+        else if (b == "editor")
+            openEditor();
     });
 }
 
-void GameApp::showChooser(LevelSource source)
+void GameApp::showChooser(LevelSource source, ChooserPurpose purpose)
 {
     const int count = levelCount(source);
     if (count == 0) {
         showDialog(source == LevelSource::BuiltIn ? "no levels found!" : "no own levels found!", {"ok"},
-                   [this](int) { showMenu(); });
+                   [this, purpose](int) {
+                       if (purpose == ChooserPurpose::Edit)
+                           m_screen = Screen::Editor;
+                       else
+                           showMenu();
+                   });
         return;
     }
     m_source = source;
+    m_chooserPurpose = purpose;
     m_screen = Screen::Chooser;
     m_play.reset();
     m_dialog.hide();
@@ -158,6 +200,7 @@ void GameApp::startLevel(LevelSource source, int number)
     }
     m_source = source;
     m_levelNumber = number;
+    m_playFromEditor = false;
     m_screen = Screen::Play;
     m_dialog.hide();
     m_paused = false;
@@ -167,18 +210,64 @@ void GameApp::startLevel(LevelSource source, int number)
     updateCamera();
 }
 
+void GameApp::startLevel(const game::LevelData& level)
+{
+    m_testLevel = level;
+    m_playFromEditor = true;
+    m_screen = Screen::Play;
+    m_dialog.hide();
+    m_paused = false;
+    m_movingDog = m_draggingDog = false;
+    m_play = std::make_unique<game::LevelPlay>(level, kOverviewSeconds);
+    m_camera.zoom = 1.0f;
+    updateCamera();
+}
+
+void GameApp::leaveLevel()
+{
+    m_play.reset();
+    m_paused = false;
+    if (m_playFromEditor) {
+        m_playFromEditor = false;
+        m_screen = Screen::Editor;
+        m_dialog.hide();
+        m_camera.zoom = 1.0f;
+        m_camera.position = {-ui::EditorToolbar::columnWidth(), 0};
+    } else {
+        showChooser(m_source);
+    }
+}
+
 void GameApp::onLevelOver()
 {
+    const auto restart = [this] {
+        if (m_playFromEditor)
+            startLevel(m_testLevel);
+        else
+            startLevel(m_source, m_levelNumber);
+    };
     if (m_play->status() == LevelStatus::TimeUp) {
-        showDialog("time is up!", {"try again", "return"}, [this](int button) {
+        showDialog("time is up!", {"try again", "return"}, [this, restart](int button) {
             if (button == 0)
-                startLevel(m_source, m_levelNumber);
+                restart();
             else
-                showChooser(m_source);
+                leaveLevel();
         });
         return;
     }
     const game::LevelResult r = m_play->result();
+    if (m_playFromEditor) {
+        // (Level::finish() in edit mode)
+        const std::string text = core::format("level finished!\n\nscore: %d\ntime bonus: %d\n\ntotal score: %d",
+                                              r.score, r.timeBonus, r.total());
+        showDialog(text, {"play again", "return to editor"}, [this, restart](int button) {
+            if (button == 0)
+                restart();
+            else
+                leaveLevel();
+        });
+        return;
+    }
     const std::string text = core::format("level %d finished!\n\nscore: %d\ntime bonus: %d\n\ntotal score: %d",
                                           m_levelNumber, r.score, r.timeBonus, r.total());
     showDialog(text, {"play again", "next level", "stop playing"}, [this](int button) {
@@ -212,7 +301,13 @@ void GameApp::back()
         m_quit = true;
         break;
     case Screen::Chooser:
-        showMenu();
+        if (m_chooserPurpose == ChooserPurpose::Edit)
+            m_screen = Screen::Editor;
+        else
+            showMenu();
+        break;
+    case Screen::Editor:
+        editorButton(ui::EditorButton::Leave);
         break;
     case Screen::Play:
         if (m_paused)
@@ -245,7 +340,7 @@ void GameApp::handleEvent(const SDL_Event& event)
         }
         break;
     case SDL_EVENT_MOUSE_WHEEL:
-        if (m_screen == Screen::Play)
+        if (m_screen == Screen::Play || m_screen == Screen::Editor)
             m_camera.zoomAt({event.wheel.mouse_x, event.wheel.mouse_y}, std::pow(1.1f, event.wheel.y));
         return;
     default:
@@ -272,16 +367,29 @@ void GameApp::handleEvent(const SDL_Event& event)
     if (m_screen == Screen::Chooser) {
         if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && event.button.button == SDL_BUTTON_LEFT) {
             const int number = m_chooser.hit({event.button.x, event.button.y});
-            if (number == 0)
+            if (m_chooserPurpose == ChooserPurpose::Edit) {
+                // load an own level into the editor
+                if (number > 0) {
+                    if (auto level = loadLevel(LevelSource::User, number))
+                        m_editor.load(*level, number);
+                    m_camera.zoom = 1.0f;
+                    m_camera.position = {-ui::EditorToolbar::columnWidth(), 0};
+                }
+                if (number >= 0)
+                    m_screen = Screen::Editor;
+            } else if (number == 0) {
                 showMenu();
-            else if (number > 0)
+            } else if (number > 0) {
                 startLevel(m_source, number);
+            }
         }
         return;
     }
 
     if (m_screen == Screen::Play && m_play)
         handlePlayEvent(event);
+    else if (m_screen == Screen::Editor)
+        handleEditorEvent(event);
 }
 
 void GameApp::handlePinch(const SDL_Event& event)
@@ -339,10 +447,13 @@ void GameApp::handlePlayEvent(const SDL_Event& event)
         if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN && event.button.button == SDL_BUTTON_LEFT) {
             switch (m_hud.hit({event.button.x, event.button.y}, true)) {
             case ui::HudButton::Stop:
-                showChooser(m_source);
+                leaveLevel();
                 break;
             case ui::HudButton::Retry:
-                startLevel(m_source, m_levelNumber);
+                if (m_playFromEditor)
+                    startLevel(m_testLevel);
+                else
+                    startLevel(m_source, m_levelNumber);
                 break;
             case ui::HudButton::Play:
                 m_paused = false;
@@ -537,7 +648,7 @@ void GameApp::drawBonus()
     }
 }
 
-void GameApp::draw(float alpha)
+void GameApp::draw(float alpha, bool present)
 {
     gfx::Renderer& r = m_renderer;
     r.clear(kBackgroundColor);
@@ -555,6 +666,9 @@ void GameApp::draw(float alpha)
         r.setCamera(nullptr);
         m_chooser.layout(m_chooserCount, r.screenSize());
         m_chooser.draw(ui);
+        break;
+    case Screen::Editor:
+        drawEditor();
         break;
     case Screen::Play:
         if (m_play) {
@@ -574,5 +688,157 @@ void GameApp::draw(float alpha)
 
     r.setCamera(nullptr);
     m_dialog.draw(ui);
-    r.present();
+    if (present)
+        r.present();
+}
+
+// =============================================================================================
+// level editor (Qt: the editing part of Level, EditorItems)
+
+void GameApp::openEditor()
+{
+    m_screen = Screen::Editor;
+    m_dialog.hide();
+    m_editor.clear();
+    m_editor.tool = game::EditTool::Fence;
+    m_camera.zoom = 1.0f;
+    // level origin right of the tool column
+    m_camera.position = {-ui::EditorToolbar::columnWidth(), 0};
+}
+
+void GameApp::normalizeEditorLevel()
+{
+    // objects move so the level starts at (0, 0); move the view along so nothing jumps
+    m_camera.position += m_editor.normalize();
+}
+
+bool GameApp::saveEditorLevel(bool confirm)
+{
+    if (const auto error = m_editor.validate()) {
+        showDialog(*error, {"ok"}, nullptr);
+        return false;
+    }
+    normalizeEditorLevel();
+
+    int number = m_editor.userLevelNumber();
+    if (number == 0)
+        number = levelCount(LevelSource::User) + 1;
+    if (!platform::writeFile(userLevelPath(number), game::serializeLevel(m_editor.level()))) {
+        showDialog("error saving the level!", {"ok"}, nullptr);
+        return false;
+    }
+    m_editor.setUserLevelNumber(number);
+    m_editor.markSaved();
+    if (confirm)
+        showDialog(core::format("saved as own level %d", number), {"ok"}, nullptr);
+    return true;
+}
+
+void GameApp::askForSave(std::function<void()> next)
+{
+    if (!m_editor.dirty()) {
+        next();
+        return;
+    }
+    // (Level::askForSave())
+    showDialog("level has not been saved!\n\nwhat do you want to do?", {"save now", "don't save", "continue editing"},
+               [this, next](int button) {
+                   if (button == 0) {
+                       if (saveEditorLevel(false))
+                           next();
+                   } else if (button == 1) {
+                       next();
+                   }
+               });
+}
+
+void GameApp::editorButton(ui::EditorButton button)
+{
+    switch (button) {
+    case ui::EditorButton::Undo:
+        m_editor.undo();
+        break;
+    case ui::EditorButton::Load:
+        askForSave([this] { showChooser(LevelSource::User, ChooserPurpose::Edit); });
+        break;
+    case ui::EditorButton::Save:
+        saveEditorLevel(true);
+        break;
+    case ui::EditorButton::Play:
+        if (const auto error = m_editor.validate()) {
+            showDialog(*error, {"ok"}, nullptr);
+        } else {
+            normalizeEditorLevel();
+            startLevel(m_editor.level());
+        }
+        break;
+    case ui::EditorButton::Leave:
+        askForSave([this] { showMenu(); });
+        break;
+    case ui::EditorButton::Count:
+        break;
+    default:
+        m_editor.tool = toEditTool(button);
+        break;
+    }
+}
+
+void GameApp::handleEditorEvent(const SDL_Event& event)
+{
+    m_toolbar.layout(m_renderer.screenSize());
+    switch (event.type) {
+    case SDL_EVENT_KEY_DOWN:
+        if (event.key.key == SDLK_Z && (event.key.mod & SDL_KMOD_CTRL))
+            m_editor.undo();
+        break;
+    case SDL_EVENT_MOUSE_BUTTON_DOWN: {
+        const Vec2 p{event.button.x, event.button.y};
+        if (event.button.button != SDL_BUTTON_LEFT) {
+            // right or middle button: pan with any tool
+            m_panning = true;
+            break;
+        }
+        const ui::EditorButton b = m_toolbar.hit(p);
+        if (b != ui::EditorButton::Count) {
+            editorButton(b);
+            break;
+        }
+        m_editorPointerDown = true;
+        if (m_editor.tool == game::EditTool::Pan)
+            m_panning = true;
+        else
+            m_editor.press(m_camera.screenToWorld(p));
+        break;
+    }
+    case SDL_EVENT_MOUSE_MOTION:
+        if (m_panning)
+            m_camera.panByScreen({event.motion.xrel, event.motion.yrel});
+        else if (m_editorPointerDown)
+            m_editor.drag(m_camera.screenToWorld({event.motion.x, event.motion.y}));
+        break;
+    case SDL_EVENT_MOUSE_BUTTON_UP:
+        if (m_editorPointerDown && !m_panning)
+            m_editor.release();
+        m_editorPointerDown = false;
+        m_panning = false;
+        break;
+    default:
+        break;
+    }
+}
+
+void GameApp::drawEditor()
+{
+    gfx::Renderer& r = m_renderer;
+    m_camera.viewportSize = r.screenSize();
+    r.setCamera(&m_camera);
+    // the level's extent as it would be saved
+    const Rect bounds = m_editor.contentBounds();
+    if (!bounds.isNull())
+        r.drawRect(bounds.inflated(2.0f), Color(255, 255, 255, 60), 2.0f);
+    drawLevelData(r, m_textures, m_editor.level());
+
+    r.setCamera(nullptr);
+    m_toolbar.layout(r.screenSize());
+    m_toolbar.draw(uiContext(), toEditorButton(m_editor.tool));
 }

@@ -50,6 +50,7 @@ add_library(sheepdog_game STATIC
     src/game/character.cpp
     src/game/element.cpp
     src/game/level_data.cpp
+    src/game/level_editor.cpp
     src/game/level_play.cpp
     src/game/world.cpp
 )
@@ -134,6 +135,20 @@ if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
     target_link_libraries(test_level_play PRIVATE sheepdog_game)
     target_compile_options(test_level_play PRIVATE ${SHEEPDOG_WARNINGS})
     add_test(NAME level_play COMMAND test_level_play)
+
+    add_executable(test_level_editor tests/test_level_editor.cpp)
+    target_link_libraries(test_level_editor PRIVATE sheepdog_game)
+    target_compile_options(test_level_editor PRIVATE ${SHEEPDOG_WARNINGS})
+    add_test(NAME level_editor COMMAND test_level_editor)
+
+    # whole app with the offscreen video driver and scripted input; needs the assets next to it
+    add_executable(app_smoke tests/app_smoke.cpp src/game_app.cpp src/ui/ui.cpp src/world_view.cpp)
+    target_include_directories(app_smoke PRIVATE src)
+    target_link_libraries(app_smoke PRIVATE sheepdog_gfx sheepdog_game)
+    target_compile_options(app_smoke PRIVATE ${SHEEPDOG_WARNINGS})
+    add_custom_command(TARGET app_smoke POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHEEPDOG_ASSETS_DIR} $<TARGET_FILE_DIR:app_smoke>/assets)
+    add_test(NAME app_smoke COMMAND app_smoke WORKING_DIRECTORY $<TARGET_FILE_DIR:app_smoke>)
 
     add_executable(test_ui tests/test_ui.cpp src/ui/ui.cpp)
     target_include_directories(test_ui PRIVATE src)

@@ -282,4 +282,56 @@ void LevelChooser::draw(const Context& ui) const
     r.drawTexture(ui.textures.get("editor/leave"), m_leave);
 }
 
+// ---------------------------------------------------------------------------------------------
+// editor toolbar
+
+namespace {
+
+constexpr float kToolSize = 54.0f;
+constexpr const char* kToolImages[static_cast<int>(EditorButton::Count)] = {
+    "editor/fence", "editor/bush",   "editor/tree", "editor/water", "editor/exit", "editor/dog",  "editor/sheep",
+    "editor/undo",  "editor/eraser", "editor/pan",  "editor/load",  "editor/save", "editor/play", "editor/leave"};
+
+} // namespace
+
+float EditorToolbar::columnWidth()
+{
+    return kToolSize + 2 * kSpacer;
+}
+
+void EditorToolbar::layout(Vec2 screen)
+{
+    const int firstRight = static_cast<int>(EditorButton::Undo);
+    for (int i = 0; i < static_cast<int>(EditorButton::Count); ++i) {
+        const bool right = i >= firstRight;
+        const int row = right ? i - firstRight : i;
+        const float x = right ? screen.x - kToolSize - kSpacer : kSpacer;
+        m_buttons[i] = {x, kSpacer + static_cast<float>(row) * (kToolSize + kSpacer), kToolSize, kToolSize};
+    }
+}
+
+EditorButton EditorToolbar::hit(Vec2 p) const
+{
+    for (int i = 0; i < static_cast<int>(EditorButton::Count); ++i)
+        if (m_buttons[i].contains(p))
+            return static_cast<EditorButton>(i);
+    return EditorButton::Count;
+}
+
+void EditorToolbar::draw(const Context& ui, EditorButton selectedTool) const
+{
+    gfx::Renderer& r = ui.renderer;
+    for (int i = 0; i < static_cast<int>(EditorButton::Count); ++i) {
+        const Rect& b = m_buttons[i];
+        r.fillRect(b, Color(100, 100, 100, 180));
+        r.drawRect(b, Color(60, 60, 60, 180), 2.0f);
+        if (static_cast<EditorButton>(i) == selectedTool) {
+            r.fillRect(b, Color(227, 224, 61, 100));
+            r.drawRect(b, Color(165, 163, 47, 150), 2.0f);
+        }
+        const gfx::Texture& icon = ui.textures.get(kToolImages[i]);
+        r.drawTexture(icon, {b.center() - icon.size() * 0.5f, icon.size()});
+    }
+}
+
 } // namespace ui

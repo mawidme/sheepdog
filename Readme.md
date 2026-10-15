@@ -6,7 +6,7 @@ The SDL3 port is built with CMake. SDL is a git submodule pinned to a release ta
 git clone --recurse-submodules <repo>     # or: git submodule update --init
 cmake -S . -B build/win
 cmake --build build/win --config Debug
-ctest --test-dir build/win -C Debug        # unit tests (desktop builds only)
+ctest --test-dir build/win -C Debug        # unit tests + app smoke test (desktop builds only)
 ```
 
 Code layout: `src/core` holds platform-independent utilities (vectors, rects, colours, strings, random) with no SDL
@@ -99,6 +99,9 @@ python tools/bake_font.py
 - Mouse / touch: tap to walk there, drag to steer, tap the dog or the bark button to bark, two fingers to zoom
 - Keyboard: arrows / WASD walk, space barks, P or Esc pauses (Android: back)
 - Mouse wheel zooms; F3 shows collision areas
+- Level editor (desktop only, from the main menu): tools on the left (fence, bush, tree, water, exit, dog, sheep),
+  actions on the right (undo, eraser, pan, load, save, test play, leave). Drag to draw fences and water or to move
+  what was just placed; right/middle mouse button pans with any tool; Ctrl+Z undoes. Levels are saved as own levels.
 - User levels are read from the per-user data folder (`SDL_GetPrefPath`, e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json`)
 
 The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).

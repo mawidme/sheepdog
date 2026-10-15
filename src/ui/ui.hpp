@@ -99,4 +99,26 @@ private:
     core::Rect m_leave;
 };
 
+// ---------------------------------------------------------------------------------------------
+// Level editor toolbar (Qt: EditorItems): tools on the left, actions on the right.
+enum class EditorButton {
+    Fence, Bush, Tree, Water, Exit, Dog, Sheep, // tools placing objects (left column)
+    Undo, Eraser, Pan, Load, Save, Play, Leave, // right column
+    Count
+};
+
+class EditorToolbar {
+public:
+    // width of one column; the level view should leave this much room on both sides
+    static float columnWidth();
+
+    void layout(core::Vec2 screenSize);
+    // button at p, or EditorButton::Count
+    EditorButton hit(core::Vec2 p) const;
+    void draw(const Context& ui, EditorButton selectedTool) const;
+
+private:
+    core::Rect m_buttons[static_cast<int>(EditorButton::Count)];
+};
+
 } // namespace ui

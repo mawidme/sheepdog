@@ -43,6 +43,9 @@ bool assetExists(std::string_view relativePath)
 
 std::string userDataPath()
 {
+    // tests point this to a temporary folder
+    if (const char* dir = SDL_getenv("SHEEPDOG_USER_DIR"))
+        return std::string(dir) + "/";
     char* path = SDL_GetPrefPath("erglim", "sheepdog");
     std::string result = path ? path : "";
     SDL_free(path);
@@ -58,6 +61,20 @@ std::optional<std::string> readFile(const std::string& path)
     std::string content(static_cast<const char*>(data), size);
     SDL_free(data);
     return content;
+}
+
+bool writeFile(const std::string& path, std::string_view content)
+{
+    const size_t slash = path.find_last_of("/\\");
+    if (slash != std::string::npos && !SDL_CreateDirectory(path.substr(0, slash).c_str())) {
+        SDL_Log("can't create folder for '%s': %s", path.c_str(), SDL_GetError());
+        return false;
+    }
+    if (!SDL_SaveFile(path.c_str(), content.data(), content.size())) {
+        SDL_Log("can't write '%s': %s", path.c_str(), SDL_GetError());
+        return false;
+    }
+    return true;
 }
 
 } // namespace platform

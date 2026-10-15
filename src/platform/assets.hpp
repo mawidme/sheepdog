@@ -23,5 +23,7 @@ bool assetExists(std::string_view relativePath);
 std::string userDataPath();
 // whole content of a file given by its full path; nullopt (no log message) if it can't be read
 std::optional<std::string> readFile(const std::string& path);
+// writes the file, creating missing folders; false (and a log message) on failure
+bool writeFile(const std::string& path, std::string_view content);
 
 } // namespace platform
