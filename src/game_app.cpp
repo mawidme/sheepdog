@@ -1,5 +1,6 @@
 #include "game_app.hpp"
 
+#include "audio/audio.hpp"
 #include "core/strings.hpp"
 #include "gfx/renderer.hpp"
 #include "gfx/texture_cache.hpp"
@@ -98,10 +99,70 @@ std::string userLevelPath(int number)
 
 } // namespace
 
-GameApp::GameApp(gfx::Renderer& renderer, gfx::TextureCache& textures)
-    : m_renderer(renderer), m_textures(textures), m_font(gfx::Font::load(renderer.sdl(), textures.scale()))
+// number of level start jingles (sfx/level1..4); levels beyond that reuse them
+constexpr int kNumLevelJingles = 4;
+
+GameApp::GameApp(gfx::Renderer& renderer, gfx::TextureCache& textures, audio::Audio* audio)
+    : m_renderer(renderer),
+      m_textures(textures),
+      m_audio(audio),
+      m_font(gfx::Font::load(renderer.sdl(), textures.scale()))
 {
+    if (m_audio) {
+        for (const auto& [name, variants] : {std::pair<const char*, int>{"bark", 4}, {"sheep", 4}, {"rescue", 2},
+                                             {"level", kNumLevelJingles}, {"noBark", 1}, {"barkPowerCritical", 1},
+                                             {"barkPowerFull", 1}, {"tryAgain", 1}, {"levelDone", 1}})
+            m_audio->preload(name, variants);
+    }
     showMenu();
+}
+
+void GameApp::playSound(const char* name, int variants)
+{
+    if (m_audio)
+        m_audio->play(name, variants);
+}
+
+void GameApp::processGameEvents()
+{
+    if (!m_play)
+        return;
+    for (game::GameEvent e : m_play->world().takeEvents()) {
+        switch (e) {
+        case game::GameEvent::Bark:
+            playSound("bark", 4);
+            break;
+        case game::GameEvent::NoBark:
+            playSound("noBark");
+            break;
+        case game::GameEvent::BarkPowerCritical:
+            playSound("barkPowerCritical");
+            break;
+        case game::GameEvent::BarkPowerFull:
+            playSound("barkPowerFull");
+            break;
+        case game::GameEvent::SheepBaa:
+            playSound("sheep", 4);
+            break;
+        case game::GameEvent::SheepRescued:
+            playSound("rescue", 2);
+            break;
+        case game::GameEvent::TimeUp:
+            playSound("tryAgain");
+            stopDog();
+            onLevelOver();
+            return; // the dialog may start a new level
+        case game::GameEvent::LevelWon:
+            // (the Qt version loaded levelDone.wav but never played it)
+            playSound("levelDone");
+            stopDog();
+            onLevelOver();
+            return;
+        case game::GameEvent::BonusPickedUp:
+        case game::GameEvent::BonusEnded:
+            break;
+        }
+    }
 }
 
 // =============================================================================================
@@ -208,6 +269,9 @@ void GameApp::startLevel(LevelSource source, int number)
     m_play = std::make_unique<game::LevelPlay>(*level, kOverviewSeconds);
     m_camera.zoom = 1.0f;
     updateCamera();
+    // jingle at the start of a level (Level::start(); not when test playing from the editor)
+    if (m_audio)
+        m_audio->play(core::format("level%d", (number - 1) % kNumLevelJingles + 1));
 }
 
 void GameApp::startLevel(const game::LevelData& level)
@@ -325,9 +389,17 @@ void GameApp::handleEvent(const SDL_Event& event)
 {
     switch (event.type) {
     case SDL_EVENT_WINDOW_FOCUS_LOST:
-    case SDL_EVENT_WILL_ENTER_BACKGROUND:
         // (Qt: MyGraphicsScene::focusOutEvent())
         pause();
+        return;
+    case SDL_EVENT_WILL_ENTER_BACKGROUND:
+        pause();
+        if (m_audio)
+            m_audio->pauseDevice();
+        return;
+    case SDL_EVENT_DID_ENTER_FOREGROUND:
+        if (m_audio)
+            m_audio->resumeDevice();
         return;
     case SDL_EVENT_KEY_DOWN:
         if (event.key.key == SDLK_ESCAPE || event.key.key == SDLK_AC_BACK) {
@@ -336,6 +408,10 @@ void GameApp::handleEvent(const SDL_Event& event)
         }
         if (event.key.key == SDLK_F3) {
             m_showCollisionRects = !m_showCollisionRects;
+            return;
+        }
+        if (event.key.key == SDLK_M && m_audio) {
+            m_audio->setMuted(!m_audio->muted());
             return;
         }
         break;
@@ -386,8 +462,11 @@ void GameApp::handleEvent(const SDL_Event& event)
         return;
     }
 
-    if (m_screen == Screen::Play && m_play)
+    if (m_screen == Screen::Play && m_play) {
         handlePlayEvent(event);
+        // barking etc. sounds right away, not only with the next tick
+        processGameEvents();
+    }
     else if (m_screen == Screen::Editor)
         handleEditorEvent(event);
 }
@@ -571,14 +650,8 @@ void GameApp::tick()
     if (m_screen != Screen::Play || !m_play || m_paused || m_dialog.visible())
         return;
     m_play->tick();
-    for (game::GameEvent e : m_play->world().takeEvents()) {
-        // sounds come in chunk 8
-        if (e == game::GameEvent::LevelWon || e == game::GameEvent::TimeUp) {
-            stopDog();
-            onLevelOver();
-        }
-    }
-    if (!m_play->over())
+    processGameEvents();
+    if (m_play && !m_play->over())
         updateCamera();
 }
 

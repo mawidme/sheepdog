@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
+#include "audio/audio.hpp"
 #include "game_app.hpp"
 #include "game/constants.hpp"
 #include "gfx/renderer.hpp"
@@ -25,6 +26,7 @@ struct App {
     SDL_Renderer* renderer = nullptr;
     std::unique_ptr<gfx::Renderer> gfx;
     std::unique_ptr<gfx::TextureCache> textures;
+    std::unique_ptr<audio::Audio>  audio;
     std::unique_ptr<GameApp>       game;
     Uint64        lastTicks = 0;
     double        accumulator = 0.0;
@@ -87,7 +89,8 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
     SDL_Log("output %dx%d px, %.2f px per unit -> %dx images", pixelW, pixelH, pixelsPerUnit, static_cast<int>(scale));
     app->textures = std::make_unique<gfx::TextureCache>(app->renderer, scale);
 
-    app->game = std::make_unique<GameApp>(*app->gfx, *app->textures);
+    app->audio = audio::Audio::open();
+    app->game = std::make_unique<GameApp>(*app->gfx, *app->textures, app->audio.get());
 
     app->lastTicks = SDL_GetTicksNS();
     *appstate = app;
@@ -137,6 +140,7 @@ void SDL_AppQuit(void* appstate, SDL_AppResult /*result*/)
     auto* app = static_cast<App*>(appstate);
     if (app) {
         app->game.reset();
+        app->audio.reset();
         app->textures.reset(); // owns textures, must go before the SDL renderer
         app->gfx.reset();
         SDL_DestroyRenderer(app->renderer);

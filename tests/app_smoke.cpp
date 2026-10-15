@@ -2,6 +2,7 @@
 // feeds it scripted mouse input (menu -> editor -> build a level -> save -> test play -> back)
 // and checks the outcome. Screenshots of each step are written to the working directory
 // (smoke_*.png) for a visual check.
+#include "audio/audio.hpp"
 #include "game/level_data.hpp"
 #include "game_app.hpp"
 #include "gfx/font.hpp"
@@ -122,7 +123,8 @@ int main(int, char**)
     SDL_setenv_unsafe("SHEEPDOG_USER_DIR", userDir.c_str(), 1);
 
     SDL_SetHint(SDL_HINT_VIDEO_DRIVER, "offscreen");
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
+    SDL_SetHint(SDL_HINT_AUDIO_DRIVER, "dummy");
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         std::printf("SDL_Init: %s\n", SDL_GetError());
         return 1;
     }
@@ -140,7 +142,11 @@ int main(int, char**)
         gfx::TextureCache textures(sdl, gfx::ImageScale::X1);
         gfx::Font font = gfx::Font::load(sdl, gfx::ImageScale::X1);
         CHECK(font.valid());
-        GameApp app(renderer, textures);
+        auto audio = audio::Audio::open();
+        CHECK(audio != nullptr);
+        GameApp app(renderer, textures, audio.get());
+        // all sound files load and convert
+        CHECK(audio && audio->soundsLoaded() == 21 - 2); // gameOver and dogDead are unused
         Harness h{sdl, renderer, textures, font, app};
 
         // --- menu: no own levels yet, so "play" and "editor"
@@ -192,8 +198,15 @@ int main(int, char**)
 
         // --- test play from the editor, then stop via the pause screen: back in the editor
         h.click(h.toolButton(ui::EditorButton::Play));
+        const size_t soundsBefore = audio ? audio->playCount() : 0;
         h.ticks(3 * 24);
         h.screenshot("smoke_4_play.png");
+        // bark with the space key: a bark sound is played immediately
+        SDL_Event key{};
+        key.type = SDL_EVENT_KEY_DOWN;
+        key.key.key = SDLK_SPACE;
+        h.send(key);
+        CHECK(audio && audio->playCount() == soundsBefore + 1);
         ui::Hud hud;
         hud.layout(kScreen);
         h.click({50, 50}); // pause button

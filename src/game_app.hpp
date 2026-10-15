@@ -19,12 +19,14 @@ namespace gfx {
 class Renderer;
 class TextureCache;
 }
+namespace audio { class Audio; }
 
 // The game: main menu, level chooser, playing a level with pause screen and dialogs.
 // Replaces the Qt version's game mode handling (utils.cpp), Level and MyGraphicsScene input.
 class GameApp {
 public:
-    GameApp(gfx::Renderer& renderer, gfx::TextureCache& textures);
+    // audio may be nullptr (no sound device)
+    GameApp(gfx::Renderer& renderer, gfx::TextureCache& textures, audio::Audio* audio);
 
     void handleEvent(const SDL_Event& event); // event in render coordinates
     void tick();                              // one simulation step (1 / game::kTicksPerSecond)
@@ -70,6 +72,11 @@ private:
     void handlePinch(const SDL_Event& event);
     void stopDog();
 
+    // --- sound ----------------------------------------------------------------------------
+    // reacts to the simulation's events (sounds, end of level)
+    void processGameEvents();
+    void playSound(const char* name, int variants = 1);
+
     // --- view ---------------------------------------------------------------------------
     void updateCamera();
     void fitCamera(const game::World& world);
@@ -77,6 +84,7 @@ private:
 
     gfx::Renderer&     m_renderer;
     gfx::TextureCache& m_textures;
+    audio::Audio*      m_audio;
     gfx::Font          m_font;
     gfx::Camera        m_camera;
     ui::Hud            m_hud;

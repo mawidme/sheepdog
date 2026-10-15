@@ -98,11 +98,16 @@ python tools/bake_font.py
 
 - Mouse / touch: tap to walk there, drag to steer, tap the dog or the bark button to bark, two fingers to zoom
 - Keyboard: arrows / WASD walk, space barks, P or Esc pauses (Android: back)
-- Mouse wheel zooms; F3 shows collision areas
+- Mouse wheel zooms; M mutes the sound; F3 shows collision areas
 - Level editor (desktop only, from the main menu): tools on the left (fence, bush, tree, water, exit, dog, sheep),
   actions on the right (undo, eraser, pan, load, save, test play, leave). Drag to draw fences and water or to move
   what was just placed; right/middle mouse button pans with any tool; Ctrl+Z undoes. Levels are saved as own levels.
 - User levels are read from the per-user data folder (`SDL_GetPrefPath`, e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json`)
+
+## Sounds
+
+Sound effects are WAV files in `assets/sfx/` (any PCM format; converted to 44.1 kHz stereo float when loaded) and
+are mixed by the game itself on top of SDL's audio stream (`src/audio`).
 
 The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
 

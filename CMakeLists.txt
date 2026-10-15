@@ -69,6 +69,14 @@ add_library(sheepdog_gfx STATIC
 target_link_libraries(sheepdog_gfx PUBLIC sheepdog_core SDL3::SDL3 PRIVATE cjson)
 target_compile_options(sheepdog_gfx PRIVATE ${SHEEPDOG_WARNINGS})
 
+# --- audio: sound effects through SDL's audio stream --------------------------
+add_library(sheepdog_audio STATIC
+    src/audio/audio.cpp
+    src/audio/mixer.cpp
+)
+target_link_libraries(sheepdog_audio PUBLIC sheepdog_gfx)
+target_compile_options(sheepdog_audio PRIVATE ${SHEEPDOG_WARNINGS})
+
 # --- game ------------------------------------------------------------------
 set(SHEEPDOG_SOURCES
     src/main.cpp
@@ -83,10 +91,10 @@ if(ANDROID)
 else()
     add_executable(sheepdog ${SHEEPDOG_SOURCES})
 endif()
-target_link_libraries(sheepdog PRIVATE sheepdog_gfx sheepdog_game)
+target_link_libraries(sheepdog PRIVATE sheepdog_gfx sheepdog_game sheepdog_audio)
 target_compile_options(sheepdog PRIVATE ${SHEEPDOG_WARNINGS})
 
-# --- assets (assets/: baked images, later levels and sounds) ----------------
+# --- assets (assets/: baked images, font, levels, sounds) -------------------
 # Android packages assets/ via Gradle (app/build.gradle.kts), the others here.
 set(SHEEPDOG_ASSETS_DIR ${CMAKE_CURRENT_SOURCE_DIR}/assets)
 if(EMSCRIPTEN)
@@ -141,10 +149,15 @@ if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
     target_compile_options(test_level_editor PRIVATE ${SHEEPDOG_WARNINGS})
     add_test(NAME level_editor COMMAND test_level_editor)
 
+    add_executable(test_mixer tests/test_mixer.cpp)
+    target_link_libraries(test_mixer PRIVATE sheepdog_audio)
+    target_compile_options(test_mixer PRIVATE ${SHEEPDOG_WARNINGS})
+    add_test(NAME mixer COMMAND test_mixer)
+
     # whole app with the offscreen video driver and scripted input; needs the assets next to it
     add_executable(app_smoke tests/app_smoke.cpp src/game_app.cpp src/ui/ui.cpp src/world_view.cpp)
     target_include_directories(app_smoke PRIVATE src)
-    target_link_libraries(app_smoke PRIVATE sheepdog_gfx sheepdog_game)
+    target_link_libraries(app_smoke PRIVATE sheepdog_gfx sheepdog_game sheepdog_audio)
     target_compile_options(app_smoke PRIVATE ${SHEEPDOG_WARNINGS})
     add_custom_command(TARGET app_smoke POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHEEPDOG_ASSETS_DIR} $<TARGET_FILE_DIR:app_smoke>/assets)
