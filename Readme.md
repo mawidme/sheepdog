@@ -84,6 +84,23 @@ Built-in levels are JSON files in `assets/levels/levelN.json`; the format is doc
 `src/game/level_data.hpp`. They were converted from the old XML files in `levels/` (still used by the legacy Qt build)
 with `python tools/convert_levels_xml_to_json.py levels/*.xml --out assets/levels`, which also works for old user levels.
 
+## Font
+
+UI text uses a bitmap font baked from `tools/fonts/DejaVuSans-Bold.ttf` into `assets/fonts/<scale>x/` (atlas PNG +
+metrics JSON, committed; licence in `assets/fonts/LICENSE-DejaVu.txt`). Re-bake after changing font, size or
+characters (needs Pillow: `pip install pillow`):
+
+```
+python tools/bake_font.py
+```
+
+## Controls
+
+- Mouse / touch: tap to walk there, drag to steer, tap the dog or the bark button to bark, two fingers to zoom
+- Keyboard: arrows / WASD walk, space barks, P or Esc pauses (Android: back)
+- Mouse wheel zooms; F3 shows collision areas
+- User levels are read from the per-user data folder (`SDL_GetPrefPath`, e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json`)
+
 The old Qt build is kept until the port reaches parity: `cmake -DSHEEPDOG_LEGACY_QT=ON ...` (see the Qt notes below).
 
 ---

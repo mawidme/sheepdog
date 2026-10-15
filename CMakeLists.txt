@@ -58,19 +58,21 @@ target_compile_options(sheepdog_game PRIVATE ${SHEEPDOG_WARNINGS})
 
 # --- gfx: 2D rendering on top of SDL_Renderer -------------------------------
 add_library(sheepdog_gfx STATIC
+    src/gfx/font.cpp
     src/gfx/renderer.cpp
     src/gfx/tessellate.cpp
     src/gfx/texture.cpp
     src/gfx/texture_cache.cpp
     src/platform/assets.cpp
 )
-target_link_libraries(sheepdog_gfx PUBLIC sheepdog_core SDL3::SDL3)
+target_link_libraries(sheepdog_gfx PUBLIC sheepdog_core SDL3::SDL3 PRIVATE cjson)
 target_compile_options(sheepdog_gfx PRIVATE ${SHEEPDOG_WARNINGS})
 
 # --- game ------------------------------------------------------------------
 set(SHEEPDOG_SOURCES
     src/main.cpp
-    src/demo.cpp
+    src/game_app.cpp
+    src/ui/ui.cpp
     src/world_view.cpp
 )
 if(ANDROID)
@@ -132,6 +134,13 @@ if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
     target_link_libraries(test_level_play PRIVATE sheepdog_game)
     target_compile_options(test_level_play PRIVATE ${SHEEPDOG_WARNINGS})
     add_test(NAME level_play COMMAND test_level_play)
+
+    add_executable(test_ui tests/test_ui.cpp src/ui/ui.cpp)
+    target_include_directories(test_ui PRIVATE src)
+    target_link_libraries(test_ui PRIVATE sheepdog_gfx sheepdog_game)
+    target_compile_options(test_ui PRIVATE ${SHEEPDOG_WARNINGS})
+    target_compile_definitions(test_ui PRIVATE SHEEPDOG_ASSETS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/assets")
+    add_test(NAME ui COMMAND test_ui)
 endif()
 
 if(EMSCRIPTEN)

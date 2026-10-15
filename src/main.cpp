@@ -4,7 +4,7 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-#include "demo.hpp"
+#include "game_app.hpp"
 #include "game/constants.hpp"
 #include "gfx/renderer.hpp"
 #include "gfx/texture_cache.hpp"
@@ -25,7 +25,7 @@ struct App {
     SDL_Renderer* renderer = nullptr;
     std::unique_ptr<gfx::Renderer> gfx;
     std::unique_ptr<gfx::TextureCache> textures;
-    std::unique_ptr<Demo>          demo;
+    std::unique_ptr<GameApp>       game;
     Uint64        lastTicks = 0;
     double        accumulator = 0.0;
 };
@@ -87,7 +87,7 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
     SDL_Log("output %dx%d px, %.2f px per unit -> %dx images", pixelW, pixelH, pixelsPerUnit, static_cast<int>(scale));
     app->textures = std::make_unique<gfx::TextureCache>(app->renderer, scale);
 
-    app->demo = std::make_unique<Demo>(*app->gfx, *app->textures);
+    app->game = std::make_unique<GameApp>(*app->gfx, *app->textures);
 
     app->lastTicks = SDL_GetTicksNS();
     *appstate = app;
@@ -103,18 +103,14 @@ SDL_AppResult SDL_AppEvent(void* appstate, SDL_Event* event)
     switch (event->type) {
     case SDL_EVENT_QUIT:
         return SDL_APP_SUCCESS;
-    case SDL_EVENT_KEY_DOWN:
-        if (event->key.key == SDLK_ESCAPE)
-            return SDL_APP_SUCCESS;
-        break;
     case SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED:
         updateLogicalSize(app);
         break;
     default:
         break;
     }
-    app.demo->handleEvent(*event);
-    return SDL_APP_CONTINUE;
+    app.game->handleEvent(*event);
+    return app.game->wantsQuit() ? SDL_APP_SUCCESS : SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppIterate(void* appstate)
@@ -128,11 +124,11 @@ SDL_AppResult SDL_AppIterate(void* appstate)
 
     app.accumulator += frame;
     while (app.accumulator >= kFixedStep) {
-        app.demo->tick();
+        app.game->tick();
         app.accumulator -= kFixedStep;
     }
 
-    app.demo->draw(static_cast<float>(app.accumulator / kFixedStep));
+    app.game->draw(static_cast<float>(app.accumulator / kFixedStep));
     return SDL_APP_CONTINUE;
 }
 
@@ -140,7 +136,7 @@ void SDL_AppQuit(void* appstate, SDL_AppResult /*result*/)
 {
     auto* app = static_cast<App*>(appstate);
     if (app) {
-        app->demo.reset();
+        app->game.reset();
         app->textures.reset(); // owns textures, must go before the SDL renderer
         app->gfx.reset();
         SDL_DestroyRenderer(app->renderer);
