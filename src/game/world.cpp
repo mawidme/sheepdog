@@ -65,6 +65,12 @@ std::vector<GameEvent> World::takeEvents()
 
 void World::tick()
 {
+    beginTick();
+    advanceCharacters();
+}
+
+void World::beginTick()
+{
     ++m_tick;
     for (Dog& d : m_dogs)
         d.beginTick();
@@ -72,7 +78,10 @@ void World::tick()
         s.beginTick();
 
     updateBarkWaves();
+}
 
+void World::advanceCharacters()
+{
     // Qt: QGraphicsScene::advance() phase 0 (animations), then phase 1 (movement).
     // Dogs move before sheep, so sheep react to the dog's new position.
     for (Dog& d : m_dogs)

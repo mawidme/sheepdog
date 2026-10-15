@@ -19,6 +19,11 @@ enum class GameEvent {
     BarkPowerFull,
     SheepBaa,
     SheepRescued,
+    // level rules (LevelPlay)
+    BonusPickedUp,
+    BonusEnded,
+    TimeUp,
+    LevelWon,
 };
 
 struct BarkWave {
@@ -32,7 +37,10 @@ class World {
 public:
     explicit World(const LevelData& level);
 
+    // One tick = beginTick() + advanceCharacters(); level rules run in between (Qt: Level::update()).
     void tick();
+    void beginTick();
+    void advanceCharacters();
 
     // Makes dog number `dog` bark; returns false if it couldn't (no bark power, no sheep).
     bool bark(size_t dog = 0);
@@ -56,6 +64,7 @@ public:
 
     // events since the last call
     std::vector<GameEvent> takeEvents();
+    void pushEvent(GameEvent e) { m_events.push_back(e); }
 
     // spatial interval for collision checks (gColCheckStepDiff)
     float collisionStep() const { return m_colCheckStep; }

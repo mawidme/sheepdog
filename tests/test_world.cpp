@@ -64,7 +64,8 @@ void testImageSizesMatchSvgs()
         const char* file;
         Vec2 size;
     } images[] = {{"dog01", kDogImageSize},   {"sheep01", kSheepImageSize}, {"bush1", kBushImageSize},
-                  {"tree1", kTreeImageSize}, {"exit1", kExitImageSize}};
+                  {"tree1", kTreeImageSize}, {"exit1", kExitImageSize},
+                  {"bonus/box", kBonusBoxImageSize}};
     const std::regex attr(R"re(<svg\b[^>]*?\swidth="([0-9.]+)"[^>]*?\sheight="([0-9.]+)")re");
     for (const auto& img : images) {
         const std::string svg = readFile(std::string(SHEEPDOG_SOURCE_DIR) + "/img/" + img.file + ".svg");

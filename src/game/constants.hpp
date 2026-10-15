@@ -15,6 +15,7 @@ inline constexpr core::Vec2 kSheepImageSize{41.820915f, 59.999996f};
 inline constexpr core::Vec2 kBushImageSize{59.967339f, 59.983982f};
 inline constexpr core::Vec2 kTreeImageSize{104.99441f, 104.92934f};
 inline constexpr core::Vec2 kExitImageSize{90.000031f, 89.997154f};
+inline constexpr core::Vec2 kBonusBoxImageSize{40.000004f, 40.013988f};
 
 inline constexpr int kNumDogAnimationSteps = 7;
 inline constexpr int kNumSheepAnimationSteps = 1;

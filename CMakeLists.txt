@@ -46,9 +46,11 @@ target_include_directories(cjson PUBLIC external/cjson)
 
 # --- game: game logic and data, no SDL ---------------------------------------
 add_library(sheepdog_game STATIC
+    src/game/bonus.cpp
     src/game/character.cpp
     src/game/element.cpp
     src/game/level_data.cpp
+    src/game/level_play.cpp
     src/game/world.cpp
 )
 target_link_libraries(sheepdog_game PUBLIC sheepdog_core PRIVATE cjson)
@@ -125,6 +127,11 @@ if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
     target_compile_options(test_world PRIVATE ${SHEEPDOG_WARNINGS})
     target_compile_definitions(test_world PRIVATE SHEEPDOG_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
     add_test(NAME world COMMAND test_world)
+
+    add_executable(test_level_play tests/test_level_play.cpp)
+    target_link_libraries(test_level_play PRIVATE sheepdog_game)
+    target_compile_options(test_level_play PRIVATE ${SHEEPDOG_WARNINGS})
+    add_test(NAME level_play COMMAND test_level_play)
 endif()
 
 if(EMSCRIPTEN)
