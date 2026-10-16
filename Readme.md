@@ -99,8 +99,18 @@ cmake -S . -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_
 open build/ios/sheepdog.xcodeproj
 ```
 
-Select the `sheepdog` scheme and a device or simulator, then run. The team ID is shown in Xcode under
-Settings > Accounts. With a free Apple ID (personal team) installs on your own device expire after 7 days, and the
+Select the `sheepdog` scheme and a device or simulator, then run. On a device, enable Developer Mode first (iPhone /
+iPad: Settings > Privacy & Security > Developer Mode).
+
+The team ID is tied to your Apple account: pass it on the command line as above (it ends up only in the ignored
+`build/` folder) and don't commit it. To find it, add your Apple ID in Xcode under Settings > Accounts, which also
+creates an "Apple Development" signing certificate, then read the team ID from that certificate (the `OU=` field):
+
+```
+security find-certificate -c "Apple Development" -p | openssl x509 -noout -subject
+```
+
+With a paid membership it is also shown at https://developer.apple.com/account under Membership details. With a free Apple ID (personal team) installs on your own device expire after 7 days, and the
 bundle ID may need to be unique: `-DSHEEPDOG_BUNDLE_ID=ch.erglim.sheepdog.<something>`. TestFlight and the App Store
 require a paid Apple Developer Program membership.
 
