@@ -79,6 +79,7 @@ void LevelEditor::pushUndo(const LevelData& before)
     if (m_undo.size() > kMaxUndoSteps)
         m_undo.erase(m_undo.begin());
     m_dirty = true;
+    m_pressAddedUndo = true;
 }
 
 void LevelEditor::undo()
@@ -158,6 +159,7 @@ void LevelEditor::press(Vec2 p)
 {
     const LevelData before = m_level;
     m_dirtyBeforePress = m_dirty;
+    m_pressAddedUndo = false;
     m_dragged = Dragged::None;
 
     switch (tool) {
@@ -244,6 +246,7 @@ void LevelEditor::drag(Vec2 p)
             m_level = m_undo.back();
             m_undo.pop_back();
             m_dirty = m_dirtyBeforePress;
+            m_pressAddedUndo = false;
             m_beforeWater = m_level;
         }
         break;
@@ -264,6 +267,19 @@ void LevelEditor::release()
     }
     m_dragged = Dragged::None;
     m_beforeWater.reset();
+    m_pressAddedUndo = false;
+}
+
+void LevelEditor::cancel()
+{
+    if (m_pressAddedUndo) {
+        m_level = m_undo.back();
+        m_undo.pop_back();
+        m_dirty = m_dirtyBeforePress;
+    }
+    m_dragged = Dragged::None;
+    m_beforeWater.reset();
+    m_pressAddedUndo = false;
 }
 
 std::optional<std::string> LevelEditor::validate() const

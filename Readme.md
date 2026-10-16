@@ -2,7 +2,7 @@
 
 Herd the sheep into the exits before the time runs out: walk the dog around them and bark to drive them along.
 Bonus boxes give you more time, a stronger bark, sleeping or speedy sheep, or make the dog drunk. Comes with a
-level editor (desktop).
+level editor (desktop and iPad).
 
 C++20 with [SDL3](https://libsdl.org) for windowing, input, rendering and audio. Runs on Windows (and other desktops),
 Android, the web (Emscripten) and iOS.
@@ -130,12 +130,15 @@ xcrun simctl launch booted ch.erglim.sheepdog
 - Keyboard: arrows / WASD walk, space barks, P or Esc pauses (Android: back)
 - Mouse wheel zooms, M mutes the sound, F3 shows collision areas
 - Own levels (made with the editor) live in the per-user data folder: `SDL_GetPrefPath("erglim", "sheepdog")/levels/`,
-  e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json` on Windows
+  e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json` on Windows. On iOS they are in the app's Documents folder
+  instead, shown in the Files app under On My iPad (iPhone) > sheepdog > levels and in the Finder when the device is
+  connected, so they can be copied to and from other devices. Levels are numbered without gaps: a copied-in level must
+  be named `levelN.json` with the next free number
 
-**Level editor** (desktop, from the main menu): tools on the left place fences, bushes, trees, water, exits, the dog
-and sheep; on the right are undo, eraser, pan, load, save, test play and leave. Drag to draw fences and water or to
-move what you just placed; the right or middle mouse button pans with any tool, Ctrl+Z undoes. A level needs a dog,
-at least one sheep and an exit.
+**Level editor** (desktop and iPad, from the main menu): tools on the left place fences, bushes, trees, water, exits,
+the dog and sheep; on the right are undo, eraser, pan, load, save, test play and leave. Drag to draw fences and water
+or to move what you just placed; the right or middle mouse button pans with any tool, Ctrl+Z undoes. On the iPad two
+fingers zoom and pan. A level needs a dog, at least one sheep and an exit.
 
 ## Code layout
 

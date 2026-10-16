@@ -36,6 +36,8 @@ public:
     void press(core::Vec2 p);
     void drag(core::Vec2 p);
     void release();
+    // abandons the current press as if it never happened (e.g. a second finger starts a pinch)
+    void cancel();
 
     bool canUndo() const { return !m_undo.empty(); }
     void undo();
@@ -64,6 +66,7 @@ private:
     int m_userLevelNumber = 0;
     bool m_dirty = false;
     bool m_dirtyBeforePress = false;
+    bool m_pressAddedUndo = false; // the current press pushed an undo step
     std::vector<LevelData> m_undo;
 
     Dragged m_dragged = Dragged::None;

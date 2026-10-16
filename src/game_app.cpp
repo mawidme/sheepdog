@@ -33,12 +33,18 @@ constexpr float kOverviewSeconds = game::kOverviewSecondsMobile;
 constexpr float kOverviewSeconds = game::kOverviewSecondsDesktop;
 #endif
 
-// the level editor needs a mouse and a writable file system
-#if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_IOS) || defined(SDL_PLATFORM_EMSCRIPTEN)
-constexpr bool kEditorAvailable = false;
+// The level editor needs a large screen and a level folder the player can reach (to share levels):
+// desktop, and iPad (levels go to the app's Documents folder, visible in the Files app).
+bool editorAvailable()
+{
+#if defined(SDL_PLATFORM_IOS)
+    return SDL_IsTablet();
+#elif defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_EMSCRIPTEN)
+    return false;
 #else
-constexpr bool kEditorAvailable = true;
+    return true;
 #endif
+}
 
 game::EditTool toEditTool(ui::EditorButton b)
 {
@@ -217,7 +223,7 @@ void GameApp::showMenu()
     std::vector<std::string> buttons{"play"};
     if (levelCount(LevelSource::User) > 0)
         buttons.push_back("play own levels");
-    if (kEditorAvailable)
+    if (editorAvailable())
         buttons.push_back("editor");
     showDialog("", buttons, [this, buttons](int button) {
         const std::string& b = buttons[static_cast<size_t>(button)];
@@ -489,20 +495,34 @@ void GameApp::handlePinch(const SDL_Event& event)
     default:
         return;
     }
-    if (m_fingers.size() != 2 || m_screen != Screen::Play)
+    if (m_fingers.size() != 2 || (m_screen != Screen::Play && m_screen != Screen::Editor))
         return;
 
     const Vec2 a = m_fingers.begin()->second;
     const Vec2 b = std::next(m_fingers.begin())->second;
+    const Vec2 center = (a + b) * 0.5f;
     const float dist = distance(a, b);
     if (!m_pinching) {
-        // second finger down: zoom instead of steering the dog (Qt: gPinchZooming)
+        // second finger down: zoom instead of steering the dog (Qt: gPinchZooming) or editing
         m_pinching = true;
         m_pinchDistance = dist;
-        stopDog();
-    } else if (m_pinchDistance > 1.0f && dist > 1.0f) {
-        m_camera.zoomAt((a + b) * 0.5f, dist / m_pinchDistance);
+        m_pinchCenter = center;
+        if (m_screen == Screen::Play) {
+            stopDog();
+        } else {
+            // the first finger already pressed with the current tool: take that back
+            if (m_editorPointerDown && !m_panning)
+                m_editor.cancel();
+            m_editorPointerDown = m_panning = false;
+        }
+    } else {
+        // in the editor two fingers also pan (the camera follows the dog while playing)
+        if (m_screen == Screen::Editor)
+            m_camera.panByScreen(center - m_pinchCenter);
+        if (m_pinchDistance > 1.0f && dist > 1.0f)
+            m_camera.zoomAt(center, dist / m_pinchDistance);
         m_pinchDistance = dist;
+        m_pinchCenter = center;
     }
 }
 
@@ -872,6 +892,8 @@ void GameApp::editorButton(ui::EditorButton button)
 
 void GameApp::handleEditorEvent(const SDL_Event& event)
 {
+    if (m_pinching && isTouchMouse(event))
+        return;
     m_toolbar.layout(m_renderer.screenSize());
     switch (event.type) {
     case SDL_EVENT_KEY_DOWN:

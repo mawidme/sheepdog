@@ -46,6 +46,11 @@ std::string userDataPath()
     // tests point this to a temporary folder
     if (const char* dir = SDL_getenv("SHEEPDOG_USER_DIR"))
         return std::string(dir) + "/";
+#ifdef SDL_PLATFORM_IOS
+    // the app's Documents folder: shown in the Files app (UIFileSharingEnabled), so levels can be shared
+    if (const char* documents = SDL_GetUserFolder(SDL_FOLDER_DOCUMENTS))
+        return documents;
+#endif
     char* path = SDL_GetPrefPath("erglim", "sheepdog");
     std::string result = path ? path : "";
     SDL_free(path);

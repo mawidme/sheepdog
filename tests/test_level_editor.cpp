@@ -202,6 +202,41 @@ void testLoad()
     CHECK(e.empty() && e.userLevelNumber() == 0 && e.level().timeSeconds == kDefaultEditorLevelTime);
 }
 
+void testCancel()
+{
+    // a cancelled press leaves no trace: no object, no undo step, dirty flag as before
+    LevelEditor e;
+    e.tool = EditTool::Bush;
+    e.press({100, 100});
+    e.drag({150, 150});
+    e.cancel();
+    CHECK(e.empty() && !e.canUndo() && !e.dirty());
+
+    place(e, EditTool::Sheep, {300, 300});
+    e.tool = EditTool::Eraser;
+    e.press({300, 300});
+    CHECK(e.level().sheep.empty());
+    e.cancel();
+    CHECK(e.level().sheep.size() == 1 && e.dirty());
+    e.undo();
+    CHECK(e.empty() && !e.canUndo());
+
+    // water: cancelled both before and after it got big enough
+    e.tool = EditTool::Water;
+    e.press({100, 100});
+    e.cancel();
+    e.press({100, 100});
+    e.drag({250, 250});
+    e.cancel();
+    CHECK(e.level().water.empty() && !e.canUndo());
+
+    // nothing pressed: no effect; a release after cancel doesn't touch the level either
+    place(e, EditTool::Tree, {400, 400});
+    e.cancel();
+    e.release();
+    CHECK(e.level().trees.size() == 1 && e.canUndo());
+}
+
 } // namespace
 
 int main()
@@ -212,6 +247,7 @@ int main()
     testEraseAndUndo();
     testValidateAndNormalize();
     testLoad();
+    testCancel();
 
     if (gFailures == 0)
         std::printf("all level editor tests passed\n");

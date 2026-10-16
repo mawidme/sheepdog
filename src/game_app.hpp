@@ -115,8 +115,9 @@ private:
     bool       m_draggingDog = false;
     core::Vec2 m_clickPoint;
 
-    // two-finger pinch zoom
+    // two-finger pinch zoom (and pan in the editor)
     std::map<long long, core::Vec2> m_fingers;
-    bool  m_pinching = false;
-    float m_pinchDistance = 0.0f;
+    bool       m_pinching = false;
+    float      m_pinchDistance = 0.0f;
+    core::Vec2 m_pinchCenter;
 };

@@ -19,7 +19,8 @@ std::optional<std::string> readAssetFile(std::string_view relativePath);
 // true if the asset can be opened (no log message otherwise)
 bool assetExists(std::string_view relativePath);
 
-// Writable per-user folder (SDL_GetPrefPath), ends with a separator; user levels go in "levels/".
+// Writable per-user folder (SDL_GetPrefPath; on iOS the app's Documents folder, visible in the Files app),
+// ends with a separator; user levels go in "levels/".
 std::string userDataPath();
 // whole content of a file given by its full path; nullopt (no log message) if it can't be read
 std::optional<std::string> readFile(const std::string& path);
