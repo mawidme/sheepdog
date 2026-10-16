@@ -176,6 +176,12 @@ if(EMSCRIPTEN)
     # emit sheepdog.html + .js + .wasm; serve the build dir over http to run it
     set_target_properties(sheepdog PROPERTIES SUFFIX ".html")
     target_link_options(sheepdog PRIVATE -sALLOW_MEMORY_GROWTH=1)
+    # home screen web app: manifest and icons next to the page (icons generated: tools/bake_icons.py)
+    set(SHEEPDOG_WEB_FILES manifest.webmanifest icon-180.png icon-192.png icon-512.png icon-maskable-512.png)
+    foreach(f IN LISTS SHEEPDOG_WEB_FILES)
+        add_custom_command(TARGET sheepdog POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_CURRENT_SOURCE_DIR}/cmake/web/${f} $<TARGET_FILE_DIR:sheepdog>)
+    endforeach()
 endif()
 
 if(IOS)

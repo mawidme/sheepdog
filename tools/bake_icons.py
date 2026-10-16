@@ -8,6 +8,7 @@ Outputs:
   app/src/main/res/mipmap-*/ic_launcher_foreground.png   Android adaptive icon foreground
   cmake/ios/Assets.xcassets/AppIcon.appiconset/          iOS app icon (1024 px, opaque)
   cmake/windows/sheepdog.ico                             Windows executable icon
+  cmake/web/icon-*.png                                   web app (home screen) icons
   assets/icon.png                                        window icon (desktop)
 """
 import argparse
@@ -75,6 +76,17 @@ def main():
     win = ROOT / "cmake" / "windows"
     win.mkdir(parents=True, exist_ok=True)
     render(resvg, 256).save(win / "sheepdog.ico", sizes=[(16, 16), (24, 24), (32, 32), (48, 48), (64, 64), (256, 256)])
+
+    # web app: apple-touch-icon (opaque, iOS rounds it), manifest icons (as is, and maskable with the
+    # icon in the inner 80% safe zone)
+    web = ROOT / "cmake" / "web"
+    on_background(render(resvg, 180)).save(web / "icon-180.png", optimize=True)
+    for size in (192, 512):
+        render(resvg, size).save(web / f"icon-{size}.png", optimize=True)
+    maskable = Image.new("RGBA", (512, 512), BACKGROUND + (255,))
+    inner = render(resvg, 420)
+    maskable.alpha_composite(inner, ((512 - inner.width) // 2, (512 - inner.height) // 2))
+    maskable.convert("RGB").save(web / "icon-maskable-512.png", optimize=True)
 
     # window icon
     render(resvg, 256).save(ROOT / "assets" / "icon.png", optimize=True)

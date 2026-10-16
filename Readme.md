@@ -38,6 +38,10 @@ emsdk install latest
 emsdk activate latest
 ```
 
+On macOS: `git clone https://github.com/emscripten-core/emsdk.git ~/emsdk`, then `./emsdk install latest` and
+`./emsdk activate latest` in it, and `source ~/emsdk/emsdk_env.sh` in the build shell. emsdk needs Python 3.10+
+(`brew install python`, or point `EMSDK_PYTHON` to one); Ninja: `brew install ninja`.
+
 Build in a shell where `emsdk_env` was run (needs Ninja, e.g. the one bundled with Visual Studio):
 
 ```
@@ -46,9 +50,24 @@ cmake --build build/web
 python -m http.server -d build/web 8000     # then open http://localhost:8000/sheepdog.html
 ```
 
-Deploy `sheepdog.html`, `.js`, `.wasm` and `.data` together; the page must be served over http(s). The web build
-packages only the 2x images to keep the download small (about 4 MB). Browsers start sound only after the first
-click or key press. The level editor is not available on the web.
+Deploy `sheepdog.html` (may be renamed to `index.html`), `.js`, `.wasm`, `.data`, `manifest.webmanifest` and the
+`icon-*.png` files together; the page must be served over http(s). The web build packages only the 2x images to keep
+the download small (about 4 MB). Browsers start sound only after the first click or key press. The level editor is
+not available on the web.
+
+**Home screen.** "Add to Home Screen" (iOS: Safari's share menu; Android: Chrome's menu) installs the page as an app
+with its icon that opens fullscreen, without the browser bar.
+
+**GitHub Pages.** `.github/workflows/pages.yml` builds the web version and publishes it whenever a GitHub release
+is published (the zip of the site is attached to the release), or by hand from the Actions tab (Run workflow). One-time
+setup in the repository settings:
+
+- Settings > Pages > Build and deployment > Source: **GitHub Actions**
+- Settings > Environments > github-pages > Deployment branches and tags: add a tag rule `v*` (by default only the
+  default branch may deploy, so releases from tags would be rejected)
+
+The game is then at `https://<user>.github.io/<repo>/`. Pages is free for public repositories; private ones need a
+paid GitHub plan.
 
 ### Android
 

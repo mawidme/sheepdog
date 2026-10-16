@@ -1,0 +1,16 @@
+{
+  "name": "Sheepdog",
+  "short_name": "Sheepdog",
+  "description": "Herd the sheep into the exits before the time runs out.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "landscape",
+  "background_color": "#006400",
+  "theme_color": "#006400",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
