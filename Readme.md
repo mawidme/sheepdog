@@ -5,7 +5,7 @@ Bonus boxes give you more time, a stronger bark, sleeping or speedy sheep, or ma
 level editor (desktop).
 
 C++20 with [SDL3](https://libsdl.org) for windowing, input, rendering and audio. Runs on Windows (and other desktops),
-Android, the web (Emscripten) and iOS (not tested yet).
+Android, the web (Emscripten) and iOS.
 
 ## Getting the code
 
@@ -82,7 +82,17 @@ keyPassword=...
 
 ### iOS
 
-A Mac with Xcode and CMake. Generate an Xcode project:
+A Mac with Xcode (from the App Store) and CMake. One-time setup:
+
+```
+sudo xcodebuild -license accept                   # accept the Xcode licence, or start Xcode once
+sudo xcode-select -s /Applications/Xcode.app      # if xcode-select -p shows /Library/Developer/CommandLineTools
+brew install cmake                                # or the CMake.app from cmake.org
+```
+
+Xcode downloads the iOS simulator runtime on first start if it is missing (Settings > Components).
+
+Generate an Xcode project:
 
 ```
 cmake -S . -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DSHEEPDOG_IOS_TEAM_ID=<team id>
@@ -93,6 +103,16 @@ Select the `sheepdog` scheme and a device or simulator, then run. The team ID is
 Settings > Accounts. With a free Apple ID (personal team) installs on your own device expire after 7 days, and the
 bundle ID may need to be unique: `-DSHEEPDOG_BUNDLE_ID=ch.erglim.sheepdog.<something>`. TestFlight and the App Store
 require a paid Apple Developer Program membership.
+
+Simulator builds need no team ID and can also be done without opening Xcode:
+
+```
+cmake -S . -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0
+xcodebuild -project build/ios/sheepdog.xcodeproj -scheme sheepdog -destination "platform=iOS Simulator,name=iPhone 17" build
+xcrun simctl boot "iPhone 17"
+xcrun simctl install booted build/ios/Debug-iphonesimulator/sheepdog.app
+xcrun simctl launch booted ch.erglim.sheepdog
+```
 
 ## Playing
 
