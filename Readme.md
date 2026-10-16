@@ -1,38 +1,197 @@
-# REQUIREMENTS
+# Sheepdog
 
-* Qt
-- download qt 5 sources zip: https://www.qt.io/offline-installers
-  - unzip content of qt-everywhere-src-5.xx.x sub-dir to c:\qt\src
-- create build dir: `mkdir c:\qt\build`
-- configure qt5
-  - https://doc.qt.io/qt-5/android-building.html
-    - JDK: from Android Studio
-    - MinGW: LLVM-MinGW ucrt-x86_64, https://github.com/mstorsjo/llvm-mingw/releases
-    - Perl: http://strawberryperl.com/
-  - run Configure.ps1 from repo root (adjusting paths first if required)
-    - first used: ..\configure.bat -platform win32-g++ -xplatform android-clang -prefix c:\qt -nomake tests -nomake examples -android-sdk $sdkPath -android-ndk $ndkPath -android-ndk-host windows-x86_64 -no-warnings-are-errors
-    - in case this fails due to "error: ‘numeric_limits’ is not a class template": add these 3 lines at the top of qtbase/src/corelib/global/qglobal.h:
-      #ifdef __cplusplus
-      #include <limits>
-      #endif
-    - in case this fails due to "unknown argument: '-fno-keep-inline-dllexport'": comment argument in qmake.conf resp. Makefile (use file search)
-- configure qt6
-  - https://wiki.qt.io/Building_Qt_6_from_Git
-  - https://doc.qt.io/qt-6.5/android-building.html
-  - open console: x64 Native Tools Command Prompt for VS 2022
-  - mkdir c:\qt\qt6-windows-build
-  - cd c:\qt\qt6-windows-build
-  - c:\qt6-src\configure.bat -prefix C:\qt\qt6-windows
-  - cmake --build .
-  - cmake --install .
-  - run ConfigureQt6.ps1 from repo root (adjusting paths first if required)
-- cmake --build . --parallel
-- build
-  - qt5: mingw32-make.exe -j4
-  - qt6: cmake --build . --parallel
-- install
-  - qt5: mingw32-make.exe install
-  - qt6: cmake --install .
+Herd the sheep into the exits before the time runs out: walk the dog around them and bark to drive them along.
+Bonus boxes give you more time, a stronger bark, sleeping or speedy sheep, or make the dog drunk. Comes with a
+level editor (desktop and iPad).
 
-* Qt Creator open source?
-https://download.qt.io/official_releases/qtcreator/12.0/12.0.2/qt-creator-opensource-windows-x86_64-12.0.2.exe.mirrorlist?__hstc=45788219.64f02eb7ed6ba237641c1ba3ab97ff53.1689838104787.1689838104787.1689838104787.1&__hssc=45788219.1.1689838104787&__hsfp=783877104
+C++20 with [SDL3](https://libsdl.org) for windowing, input, rendering and audio. Runs on Windows (and other desktops),
+Android, the web (Emscripten) and iOS.
+
+## Getting the code
+
+SDL is a git submodule pinned to a release tag:
+
+```
+git clone --recurse-submodules <repo>     # or, in an existing clone: git submodule update --init
+```
+
+## Building
+
+### Desktop
+
+CMake 3.22+ and a C++20 compiler (e.g. Visual Studio 2022+, which also brings CMake and Ninja).
+
+```
+cmake -S . -B build/win
+cmake --build build/win --config Release      # build/win/Release/sheepdog.exe (assets are copied next to it)
+ctest --test-dir build/win -C Release         # unit tests and the app smoke test
+```
+
+### Web (Emscripten)
+
+Install emsdk once (outside the repo, ~1 GB):
+
+```
+git clone https://github.com/emscripten-core/emsdk.git %USERPROFILE%\emsdk
+cd %USERPROFILE%\emsdk
+emsdk install latest
+emsdk activate latest
+```
+
+On macOS: `git clone https://github.com/emscripten-core/emsdk.git ~/emsdk`, then `./emsdk install latest` and
+`./emsdk activate latest` in it, and `source ~/emsdk/emsdk_env.sh` in the build shell. emsdk needs Python 3.10+
+(`brew install python`, or point `EMSDK_PYTHON` to one); Ninja: `brew install ninja`.
+
+Build in a shell where `emsdk_env` was run (needs Ninja, e.g. the one bundled with Visual Studio):
+
+```
+emcmake cmake -S . -B build/web -G Ninja -DCMAKE_BUILD_TYPE=Release
+cmake --build build/web
+python -m http.server -d build/web 8000     # then open http://localhost:8000/sheepdog.html
+```
+
+Deploy `sheepdog.html` (may be renamed to `index.html`), `.js`, `.wasm`, `.data`, `manifest.webmanifest` and the
+`icon-*.png` files together; the page must be served over http(s). The web build packages only the 2x images to keep
+the download small (about 4 MB). Browsers start sound only after the first click or key press. The level editor is
+not available on the web.
+
+**Home screen.** "Add to Home Screen" (iOS: Safari's share menu; Android: Chrome's menu) installs the page as an app
+with its icon that opens fullscreen, without the browser bar.
+
+**GitHub Pages.** `.github/workflows/pages.yml` builds the web version and publishes it whenever a GitHub release
+is published (the zip of the site is attached to the release), or by hand from the Actions tab (Run workflow). One-time
+setup in the repository settings:
+
+- Settings > Pages > Build and deployment > Source: **GitHub Actions**
+- Settings > Environments > github-pages > Deployment branches and tags: add a tag rule `v*` (by default only the
+  default branch may deploy, so releases from tags would be rejected)
+
+The game is then at `https://<user>.github.io/<repo>/`. Pages is free for public repositories; private ones need a
+paid GitHub plan.
+
+### Android
+
+Android SDK with NDK 28.2.13676358 (Gradle downloads it if missing) and CMake 3.22.1 (SDK Manager), and JDK 17 (Android Studio's bundled JBR works).
+Gradle builds the native code through the top-level `CMakeLists.txt`; SDL's Java glue is compiled straight from
+`external/SDL/android-project`. Or simply open the repo root in Android Studio.
+
+```
+gradlew assembleDebug          # app/build/outputs/apk/debug/app-debug.apk
+gradlew installDebug           # build and install on a running emulator / device
+gradlew assembleRelease        # release APK (signed if keystore.properties exists, see below)
+gradlew bundleRelease          # app bundle (.aab) for Google Play
+```
+
+`local.properties` (not in git) points to the SDK; Android Studio creates it, or write `sdk.dir=...` yourself.
+
+**Release signing.** Create a key once and keep it safe (losing it means you can't update a published app):
+
+```
+keytool -genkeypair -v -keystore sheepdog-release.jks -alias sheepdog -keyalg RSA -keysize 2048 -validity 10000
+```
+
+Then create `keystore.properties` in the repo root (both files are ignored by git):
+
+```
+storeFile=sheepdog-release.jks
+storePassword=...
+keyAlias=sheepdog
+keyPassword=...
+```
+
+### iOS
+
+A Mac with Xcode (from the App Store) and CMake. One-time setup:
+
+```
+sudo xcodebuild -license accept                   # accept the Xcode licence, or start Xcode once
+sudo xcode-select -s /Applications/Xcode.app      # if xcode-select -p shows /Library/Developer/CommandLineTools
+brew install cmake                                # or the CMake.app from cmake.org
+```
+
+Xcode downloads the iOS simulator runtime on first start if it is missing (Settings > Components).
+
+Generate an Xcode project:
+
+```
+cmake -S . -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0 -DSHEEPDOG_IOS_TEAM_ID=<team id>
+open build/ios/sheepdog.xcodeproj
+```
+
+Select the `sheepdog` scheme and a device or simulator, then run. On a device, enable Developer Mode first (iPhone /
+iPad: Settings > Privacy & Security > Developer Mode).
+
+The team ID is tied to your Apple account: pass it on the command line as above (it ends up only in the ignored
+`build/` folder) and don't commit it. To find it, add your Apple ID in Xcode under Settings > Accounts, which also
+creates an "Apple Development" signing certificate, then read the team ID from that certificate (the `OU=` field):
+
+```
+security find-certificate -c "Apple Development" -p | openssl x509 -noout -subject
+```
+
+With a paid membership it is also shown at https://developer.apple.com/account under Membership details. With a free Apple ID (personal team) installs on your own device expire after 7 days, and the
+bundle ID may need to be unique: `-DSHEEPDOG_BUNDLE_ID=ch.erglim.sheepdog.<something>`. TestFlight and the App Store
+require a paid Apple Developer Program membership.
+
+Simulator builds need no team ID and can also be done without opening Xcode:
+
+```
+cmake -S . -B build/ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DCMAKE_OSX_DEPLOYMENT_TARGET=15.0
+xcodebuild -project build/ios/sheepdog.xcodeproj -scheme sheepdog -destination "platform=iOS Simulator,name=iPhone 17" build
+xcrun simctl boot "iPhone 17"
+xcrun simctl install booted build/ios/Debug-iphonesimulator/sheepdog.app
+xcrun simctl launch booted ch.erglim.sheepdog
+```
+
+## Playing
+
+- Mouse / touch: tap to walk there, drag to steer, tap the dog or the bark button to bark, two fingers to zoom
+- Keyboard: arrows / WASD walk, space barks, P or Esc pauses (Android: back)
+- Mouse wheel zooms, M mutes the sound, F3 shows collision areas
+- Own levels (made with the editor) live in the per-user data folder: `SDL_GetPrefPath("erglim", "sheepdog")/levels/`,
+  e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json` on Windows. On iOS they are in the app's Documents folder
+  instead, shown in the Files app under On My iPad (iPhone) > sheepdog > levels and in the Finder when the device is
+  connected, so they can be copied to and from other devices. Levels are numbered without gaps: a copied-in level must
+  be named `levelN.json` with the next free number
+
+**Level editor** (desktop and iPad, from the main menu): tools on the left place fences, bushes, trees, water, exits,
+the dog and sheep; on the right are undo, eraser, pan, load, save, test play and leave. Drag to draw fences and water
+or to move what you just placed; the right or middle mouse button pans with any tool, Ctrl+Z undoes. On the iPad two
+fingers zoom and pan. A level needs a dog, at least one sheep and an exit.
+
+## Code layout
+
+| Folder | Contents |
+|---|---|
+| `src/core` | vectors, rects, colours, strings, random numbers; no SDL |
+| `src/game` | game logic and data, no SDL: levels (JSON), simulation (`World`), level rules (`LevelPlay`, bonuses), editor logic |
+| `src/gfx` | 2D rendering on `SDL_Renderer`: textures, sprites, shapes, camera, bitmap font |
+| `src/audio` | sound effects: software mixer on an SDL audio stream |
+| `src/ui` | menus, message boxes, info bar, level chooser, editor toolbar |
+| `src/platform` | asset and user file access per platform |
+| `src/game_app.*`, `src/main.cpp` | game flow, input, SDL main callbacks |
+| `tests/` | unit tests per module, and `app_smoke` running the whole app offscreen with scripted input |
+| `assets/` | everything the game loads at runtime (packaged per platform) |
+| `img/`, `tools/` | source art and the tools that bake it into `assets/` |
+| `app/`, `cmake/` | Android project; iOS, Windows and web packaging files |
+
+The simulation runs at a fixed 24 ticks per second like the original game; drawing interpolates between ticks.
+
+## Assets
+
+Generated files are committed, so building needs none of these tools. Re-run them after changing the sources.
+
+- **Images**: SVGs in `img/` are baked with [resvg](https://github.com/linebender/resvg) to PNGs at 1x, 2x and 4x in
+  `assets/img/<scale>x/`; the game picks the scale matching the display at startup.
+  `cmake -P tools/bake_images.cmake` (finds resvg on PATH or in `%USERPROFILE%\tools\resvg`; or pass
+  `-DRESVG=<path>`). On Windows unzip `resvg-win64.zip` from the GitHub releases (v0.47.0 is the latest with a
+  Windows build); on macOS `brew install resvg`. Some SVGs use the "Aharoni" font; resvg falls back to a default font
+  if it is missing.
+- **App icons**: `python tools/bake_icons.py` renders `img/icon.svg` for Android (adaptive icon), iOS (asset catalog),
+  Windows (.ico) and the desktop window icon. Needs resvg and Pillow (`pip install pillow`).
+- **Font**: `python tools/bake_font.py` bakes `tools/fonts/DejaVuSans-Bold.ttf` into bitmap atlases in
+  `assets/fonts/<scale>x/` (licence: `assets/fonts/LICENSE-DejaVu.txt`). Needs Pillow.
+- **Levels**: JSON files in `assets/levels/levelN.json`, format documented in `src/game/level_data.hpp`.
+  `level0` is the main menu background. Levels from the old Qt version (XML) can be converted with
+  `python tools/convert_levels_xml_to_json.py old/*.xml --out <folder>`.
+- **Sounds**: WAV files in `assets/sfx/` (any PCM format; converted when loaded).

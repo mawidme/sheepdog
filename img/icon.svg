@@ -2,23 +2,23 @@
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
 
 <svg
-   xmlns:dc="http://purl.org/dc/elements/1.1/"
-   xmlns:cc="http://creativecommons.org/ns#"
-   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   xmlns:svg="http://www.w3.org/2000/svg"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
    width="44"
    height="44"
    id="svg2"
-   inkscape:version="0.48.1 "
+   inkscape:version="1.4.4 (dcaf3e7, 2026-05-05)"
    sodipodi:docname="icon.svg"
    inkscape:export-filename="E:\_mystuff\devel\qt\sheepdog\img\icon_hdpi.png"
    inkscape:export-xdpi="147.27"
-   inkscape:export-ydpi="147.27">
+   inkscape:export-ydpi="147.27"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:dc="http://purl.org/dc/elements/1.1/">
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -28,17 +28,20 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1680"
-     inkscape:window-height="998"
+     inkscape:window-width="1470"
+     inkscape:window-height="819"
      id="namedview47"
      showgrid="false"
-     inkscape:zoom="5.9318182"
-     inkscape:cx="-4.2988506"
-     inkscape:cy="22"
-     inkscape:window-x="-8"
-     inkscape:window-y="-8"
+     inkscape:zoom="9.4561485"
+     inkscape:cx="13.641918"
+     inkscape:cy="19.669742"
+     inkscape:window-x="0"
+     inkscape:window-y="33"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     inkscape:showpageshadow="2"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1" />
   <defs
      id="defs4">
     <linearGradient
@@ -101,7 +104,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -158,18 +161,6 @@
          id="path3757-2-0-1"
          style="fill:#000000;stroke:#000000;stroke-width:0.66000003;stroke-miterlimit:4;stroke-dasharray:none" />
     </g>
-    <text
-       x="105.56557"
-       y="313.26721"
-       transform="matrix(0.70381296,-0.71038533,0.71038533,0.70381296,0,0)"
-       id="text3055"
-       xml:space="preserve"
-       style="font-size:10.9890871px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#378b00;fill-opacity:1;stroke:#338000;stroke-width:0.59418678;stroke-opacity:1;font-family:Gulim;-inkscape-font-specification:Gulim Bold"
-       sodipodi:linespacing="125%"><tspan
-         x="105.56557"
-         y="313.26721"
-         id="tspan3057"
-         style="font-size:10.9890871px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#378b00;fill-opacity:1;stroke:#338000;stroke-width:0.59418678;stroke-opacity:1;font-family:Gulim;-inkscape-font-specification:Gulim Bold">sheep</tspan></text>
     <g
        transform="matrix(0.41275718,0.43789257,-0.43789257,0.41275718,259.04742,-58.998382)"
        id="layer1-5">
@@ -237,17 +228,5 @@
          id="rect3630-6"
          style="color:#000000;fill:#ffffff;stroke:#cccccc;stroke-width:1.08249223;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
     </g>
-    <text
-       x="107.31581"
-       y="342.32379"
-       transform="matrix(0.70381296,-0.71038533,0.71038533,0.70381296,0,0)"
-       id="text3055-4"
-       xml:space="preserve"
-       style="font-size:11.96748829px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;letter-spacing:0px;word-spacing:0px;writing-mode:lr-tb;text-anchor:start;fill:#378b00;fill-opacity:1;stroke:#338000;stroke-width:0.64708954;stroke-opacity:1;font-family:Gulim;-inkscape-font-specification:Gulim Bold"
-       sodipodi:linespacing="125%"><tspan
-         x="107.31581"
-         y="342.32379"
-         id="tspan3057-2"
-         style="font-size:11.96748829px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#378b00;fill-opacity:1;stroke:#338000;stroke-width:0.64708954;stroke-opacity:1;font-family:Gulim;-inkscape-font-specification:Gulim Bold">DOG</tspan></text>
   </g>
 </svg>
