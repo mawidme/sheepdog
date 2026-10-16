@@ -49,3 +49,6 @@ local.properties
 keystore.properties
 *.jks
 *.keystore
+
+# macOS Finder metadata
+.DS_Store
