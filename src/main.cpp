@@ -50,6 +50,36 @@ void updateLogicalSize(App& app)
     SDL_SetRenderLogicalPresentation(app.renderer, lw, lh, SDL_LOGICAL_PRESENTATION_LETTERBOX);
 }
 
+#ifdef SDL_PLATFORM_MACOS
+// Fullscreen mode at the display's native resolution (one image pixel per panel pixel). The largest 1x mode is the
+// panel size; the "looks like" modes above it are 2x modes scaled down. Displays with a camera notch also list that
+// width slightly shorter, the area below the notch: preferred, so nothing is hidden behind the notch.
+bool setNativeFullscreenMode(SDL_Window* window)
+{
+    const SDL_DisplayID display = SDL_GetDisplayForWindow(window);
+    int count = 0;
+    SDL_DisplayMode** modes = SDL_GetFullscreenDisplayModes(display, &count);
+    if (!modes)
+        return false;
+    int w = 0, h = 0;
+    for (int i = 0; i < count; ++i) { // sorted largest first
+        if (modes[i]->pixel_density != 1.0f)
+            continue;
+        if (w == 0) {
+            w = modes[i]->w;
+            h = modes[i]->h;
+        } else if (modes[i]->w == w && modes[i]->h < h && modes[i]->h > h * 0.95f) {
+            h = modes[i]->h; // below the notch
+            break;
+        }
+    }
+    SDL_free(modes);
+    SDL_DisplayMode mode;
+    return w > 0 && SDL_GetClosestFullscreenDisplayMode(display, w, h, 0.0f, false, &mode) &&
+           SDL_SetWindowFullscreenMode(window, &mode);
+}
+#endif
+
 } // namespace
 
 SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
@@ -66,6 +96,9 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
 
 #if defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_IOS)
     constexpr SDL_WindowFlags kWindowFlags = SDL_WINDOW_FULLSCREEN | SDL_WINDOW_HIGH_PIXEL_DENSITY;
+#elif defined(SDL_PLATFORM_MACOS)
+    // goes fullscreen at the native resolution below
+    constexpr SDL_WindowFlags kWindowFlags = SDL_WINDOW_RESIZABLE | SDL_WINDOW_HIGH_PIXEL_DENSITY;
 #elif defined(SDL_PLATFORM_EMSCRIPTEN)
     // canvas fills the browser window and follows its size
     constexpr SDL_WindowFlags kWindowFlags =
@@ -82,6 +115,14 @@ SDL_AppResult SDL_AppInit(void** appstate, int /*argc*/, char** /*argv*/)
         return SDL_APP_FAILURE;
     }
     SDL_SetRenderVSync(app->renderer, 1);
+#ifdef SDL_PLATFORM_MACOS
+    // without a native mode: fullscreen at the desktop resolution
+    if (!setNativeFullscreenMode(app->window))
+        SDL_Log("no native display mode: %s", SDL_GetError());
+    SDL_SetWindowFullscreen(app->window, true);
+    // going fullscreen is asynchronous on macOS: wait for the final size before choosing the image scale below
+    SDL_SyncWindow(app->window);
+#endif
 
 #if !defined(SDL_PLATFORM_ANDROID) && !defined(SDL_PLATFORM_IOS) && !defined(SDL_PLATFORM_EMSCRIPTEN)
     // window / task bar icon on desktop

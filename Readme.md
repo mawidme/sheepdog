@@ -148,6 +148,7 @@ xcrun simctl launch booted ch.erglim.sheepdog
 - Mouse / touch: tap to walk there, drag to steer, tap the dog or the bark button to bark, two fingers to zoom
 - Keyboard: arrows / WASD walk, space barks, P or Esc pauses (Android: back)
 - Mouse wheel zooms, M mutes the sound, F3 shows collision areas
+- macOS: starts fullscreen at the display's native resolution (below the notch on MacBooks); Cmd+Q quits
 - Own levels (made with the editor) live in the per-user data folder: `SDL_GetPrefPath("erglim", "sheepdog")/levels/`,
   e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json` on Windows. On iOS they are in the app's Documents folder
   instead, shown in the Files app under On My iPad (iPhone) > sheepdog > levels and in the Finder when the device is
