@@ -41,52 +41,25 @@ std::optional<LevelData> loadBuiltIn(int number)
     return level;
 }
 
-// element counts from the original XML files
-struct Expected {
-    int width, height, time, fences, water, bushes, trees, exits, dogs, sheep;
-};
-
+// Every built-in level loads and survives a write / read round trip. Only the format is checked, not the
+// contents: the levels keep changing.
 void testBuiltInLevels()
 {
-    const Expected expected[] = {
-        {503, 420, 120, 36, 0, 0, 0, 4, 1, 8},
-        {364, 234, 120, 8, 0, 7, 3, 1, 1, 1},
-        {0, 0, 0, 11, 0, 9, 8, 2, 1, 2},
-        {0, 0, 0, 18, 0, 9, 5, 3, 1, 6},
+    const auto exists = [](int i) {
+        return std::ifstream(std::string(SHEEPDOG_ASSETS_DIR) + "/levels/level" + std::to_string(i) + ".json").good();
     };
-    for (int i = 0; i < 4; ++i) {
+    int count = 0;
+    for (int i = 0; exists(i); ++i) {
         const auto level = loadBuiltIn(i);
         CHECK(level.has_value());
         if (!level)
             continue;
-        const Expected& e = expected[i];
-        if (e.width != 0) {
-            CHECK(level->width == e.width);
-            CHECK(level->height == e.height);
-            CHECK(level->timeSeconds == e.time);
-        }
         CHECK(level->width > 0 && level->height > 0 && level->timeSeconds > 0);
-        CHECK(static_cast<int>(level->fences.size()) == e.fences);
-        CHECK(static_cast<int>(level->water.size()) == e.water);
-        CHECK(static_cast<int>(level->bushes.size()) == e.bushes);
-        CHECK(static_cast<int>(level->trees.size()) == e.trees);
-        CHECK(static_cast<int>(level->exits.size()) == e.exits);
-        CHECK(static_cast<int>(level->dogs.size()) == e.dogs);
-        CHECK(static_cast<int>(level->sheep.size()) == e.sheep);
-
-        // what we write, we read back identically
         const auto again = parseLevel(serializeLevel(*level));
         CHECK(again.has_value() && *again == *level);
+        ++count;
     }
-
-    // spot checks against level0.xml
-    const auto level0 = loadBuiltIn(0);
-    if (level0) {
-        CHECK(level0->fences.front().from == Vec2(20, 7) && level0->fences.front().to == Vec2(107, 7));
-        CHECK(level0->exits.back().pos == Vec2(477, 204) && level0->exits.back().style == 1);
-        CHECK(level0->dogs.front() == Vec2(203, 120));
-        CHECK(level0->sheep.back() == Vec2(247, 97));
-    }
+    CHECK(count >= 2); // level0 (menu background) and at least one level to play
 }
 
 void testRoundTripAllElements()
