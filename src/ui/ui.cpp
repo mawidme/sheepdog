@@ -36,7 +36,7 @@ Vec2 buttonSize(const gfx::FontMetrics& m, const std::string& label, float fontS
 
 void drawButton(const Context& ui, const Rect& r, const std::string& label, float fontSize)
 {
-    ui.renderer.drawRect(r, kFrameColor, kButtonFrameWidth);
+    //ui.renderer.drawRect(r, kFrameColor, kButtonFrameWidth);
     ui.font.drawCentered(ui.renderer, label, r, fontSize, kTextColor);
 }
 
