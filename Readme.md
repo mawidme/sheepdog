@@ -17,7 +17,7 @@ git clone --recurse-submodules <repo>     # or, in an existing clone: git submod
 
 ## Building
 
-### Desktop
+### Windows (and other desktops)
 
 CMake 3.22+ and a C++20 compiler (e.g. Visual Studio 2022+, which also brings CMake and Ninja).
 
@@ -26,6 +26,21 @@ cmake -S . -B build/win
 cmake --build build/win --config Release      # build/win/Release/sheepdog.exe (assets are copied next to it)
 ctest --test-dir build/win -C Release         # unit tests and the app smoke test
 ```
+
+### macOS
+
+The Xcode Command Line Tools (`xcode-select --install`; a full Xcode works too) and CMake (`brew install cmake`).
+
+```
+cmake -S . -B build/mac -DCMAKE_BUILD_TYPE=Release
+cmake --build build/mac -j 8                  # build/mac/sheepdog (assets are copied next to it)
+build/mac/sheepdog
+SDL_VIDEO_DRIVER=dummy ctest --test-dir build/mac
+```
+
+The result is a plain executable, not an `.app` bundle; start it from the terminal. It starts fullscreen at the
+display's native resolution (see Playing). The smoke test needs `SDL_VIDEO_DRIVER=dummy` on macOS: SDL's offscreen
+driver, which it uses otherwise, needs an OpenGL ES (EGL) library that macOS doesn't have.
 
 ### Web (Emscripten)
 
