@@ -33,19 +33,6 @@ constexpr float kOverviewSeconds = game::kOverviewSecondsMobile;
 constexpr float kOverviewSeconds = game::kOverviewSecondsDesktop;
 #endif
 
-// The level editor needs a large screen and a level folder the player can reach (to share levels):
-// desktop, and iPad (levels go to the app's Documents folder, visible in the Files app).
-bool editorAvailable()
-{
-#if defined(SDL_PLATFORM_IOS)
-    return SDL_IsTablet();
-#elif defined(SDL_PLATFORM_ANDROID) || defined(SDL_PLATFORM_EMSCRIPTEN)
-    return false;
-#else
-    return true;
-#endif
-}
-
 game::EditTool toEditTool(ui::EditorButton b)
 {
     switch (b) {
@@ -223,7 +210,6 @@ void GameApp::showMenu()
     std::vector<std::string> buttons{"play"};
     if (levelCount(LevelSource::User) > 0)
         buttons.push_back("play own levels");
-    if (editorAvailable())
         buttons.push_back("editor");
     showDialog("", buttons, [this, buttons](int button) {
         const std::string& b = buttons[static_cast<size_t>(button)];
@@ -453,9 +439,7 @@ void GameApp::handleEvent(const SDL_Event& event)
                 // load an own level into the editor
                 if (number > 0) {
                     if (auto level = loadLevel(LevelSource::User, number))
-                        m_editor.load(*level, number);
-                    m_camera.zoom = 1.0f;
-                    m_camera.position = {-ui::EditorToolbar::columnWidth(), 0};
+                        loadIntoEditor(*level, number);
                 }
                 if (number >= 0)
                     m_screen = Screen::Editor;
@@ -813,6 +797,13 @@ void GameApp::openEditor()
     m_camera.position = {-ui::EditorToolbar::columnWidth(), 0};
 }
 
+void GameApp::loadIntoEditor(const game::LevelData& level, int userLevelNumber)
+{
+    m_editor.load(level, userLevelNumber);
+    m_camera.zoom = 1.0f;
+    m_camera.position = {-ui::EditorToolbar::columnWidth(), 0};
+}
+
 void GameApp::normalizeEditorLevel()
 {
     // objects move so the level starts at (0, 0); move the view along so nothing jumps
@@ -830,14 +821,24 @@ bool GameApp::saveEditorLevel(bool confirm)
     int number = m_editor.userLevelNumber();
     if (number == 0)
         number = levelCount(LevelSource::User) + 1;
-    if (!platform::writeFile(userLevelPath(number), game::serializeLevel(m_editor.level()))) {
+    const std::string json = game::serializeLevel(m_editor.level());
+    if (!platform::writeFile(userLevelPath(number), json)) {
         showDialog("error saving the level!", {"ok"}, nullptr);
         return false;
     }
     m_editor.setUserLevelNumber(number);
     m_editor.markSaved();
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+    // the file above lasts only until the page is closed: the player keeps the level as a download
+    const std::string fileName = core::format("level%d.json", number);
+    platform::downloadFile(fileName, json);
+    if (confirm)
+        showDialog(core::format("saved as own level %d\nand downloaded as %s", number, fileName.c_str()), {"ok"},
+                   nullptr);
+#else
     if (confirm)
         showDialog(core::format("saved as own level %d", number), {"ok"}, nullptr);
+#endif
     return true;
 }
 
@@ -866,7 +867,22 @@ void GameApp::editorButton(ui::EditorButton button)
         m_editor.undo();
         break;
     case ui::EditorButton::Load:
+#ifdef SDL_PLATFORM_EMSCRIPTEN
+        // own levels are files on the player's device (see saveEditorLevel()): pick one in the browser
+        askForSave([this] {
+            platform::pickFile(".json,application/json", [this](std::string json) {
+                if (m_screen != Screen::Editor)
+                    return; // left the editor while the dialog was open
+                std::string error;
+                if (auto level = game::parseLevel(json, &error))
+                    loadIntoEditor(*level, 0);
+                else
+                    showDialog("this is not a level file:\n" + error, {"ok"}, nullptr);
+            });
+        });
+#else
         askForSave([this] { showChooser(LevelSource::User, ChooserPurpose::Edit); });
+#endif
         break;
     case ui::EditorButton::Save:
         saveEditorLevel(true);

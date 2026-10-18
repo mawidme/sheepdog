@@ -2,7 +2,7 @@
 
 Herd the sheep into the exits before the time runs out: walk the dog around them and bark to drive them along.
 Bonus boxes give you more time, a stronger bark, sleeping or speedy sheep, or make the dog drunk. Comes with a
-level editor (desktop and iPad).
+level editor.
 
 C++20 with [SDL3](https://libsdl.org) for windowing, input, rendering and audio. Runs on Windows (and other desktops),
 Android, the web (Emscripten) and iOS.
@@ -67,8 +67,9 @@ python -m http.server -d build/web 8000     # then open http://localhost:8000/sh
 
 Deploy `sheepdog.html` (may be renamed to `index.html`), `.js`, `.wasm`, `.data`, `manifest.webmanifest` and the
 `icon-*.png` files together; the page must be served over http(s). The web build packages only the 2x images to keep
-the download small (about 4 MB). Browsers start sound only after the first click or key press. The level editor is
-not available on the web.
+the download small (about 4 MB). Browsers start sound only after the first click or key press. In the level editor
+on the web, save downloads the level as `levelN.json` and load opens the browser's file dialog to pick one; saved
+levels can also be played ("play own levels") until the page is closed.
 
 **Home screen.** "Add to Home Screen" (iOS: Safari's share menu; Android: Chrome's menu) installs the page as an app
 with its icon that opens fullscreen, without the browser bar.
@@ -168,11 +169,12 @@ xcrun simctl launch booted ch.erglim.sheepdog
   e.g. `%APPDATA%\erglim\sheepdog\levels\levelN.json` on Windows. On iOS they are in the app's Documents folder
   instead, shown in the Files app under On My iPad (iPhone) > sheepdog > levels and in the Finder when the device is
   connected, so they can be copied to and from other devices. Levels are numbered without gaps: a copied-in level must
-  be named `levelN.json` with the next free number
+  be named `levelN.json` with the next free number. On Android they are in the app's private storage (not reachable
+  from outside). On the web, see Building > Web.
 
-**Level editor** (desktop and iPad, from the main menu): tools on the left place fences, bushes, trees, water, exits,
+**Level editor** (from the main menu): tools on the left place fences, bushes, trees, water, exits,
 the dog and sheep; on the right are undo, eraser, pan, load, save, test play and leave. Drag to draw fences and water
-or to move what you just placed; the right or middle mouse button pans with any tool, Ctrl+Z undoes. On the iPad two
+or to move what you just placed; the right or middle mouse button pans with any tool, Ctrl+Z undoes. On touch screens two
 fingers zoom and pan. A level needs a dog, at least one sheep and an exit.
 
 ## Code layout

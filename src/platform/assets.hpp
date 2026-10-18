@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -26,5 +27,13 @@ std::string userDataPath();
 std::optional<std::string> readFile(const std::string& path);
 // writes the file, creating missing folders; false (and a log message) on failure
 bool writeFile(const std::string& path, std::string_view content);
+
+#ifdef __EMSCRIPTEN__
+// Web: the browser's file dialog lets the player pick a file; onPicked gets its content later (nothing happens
+// if the dialog is cancelled). Must be called while handling a click: browsers open dialogs only on user input.
+void pickFile(const char* accept, std::function<void(std::string content)> onPicked);
+// Web: the browser downloads the content as a file of that name
+void downloadFile(const std::string& name, std::string_view content);
+#endif
 
 } // namespace platform

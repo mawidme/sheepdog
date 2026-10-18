@@ -58,6 +58,8 @@ private:
 
     // --- editor (desktop only) -----------------------------------------------------------
     void openEditor();
+    // edit a level (number of the own level it came from, 0 = none: saving makes it a new one)
+    void loadIntoEditor(const game::LevelData& level, int userLevelNumber);
     void handleEditorEvent(const SDL_Event& event);
     void editorButton(ui::EditorButton button);
     // asks to save unsaved changes first, then calls next (unless the user continues editing)
