@@ -110,9 +110,13 @@ elseif(IOS)
     endforeach()
     target_sources(sheepdog PRIVATE ${SHEEPDOG_ASSET_FILES})
 elseif(NOT ANDROID)
-    add_custom_command(TARGET sheepdog POST_BUILD
+    # refreshed on every build (a few MB), so added, changed and removed files all show up next to the executable;
+    # edits made in the build folder's copy are overwritten
+    add_custom_target(sheepdog_assets ALL
+        COMMAND ${CMAKE_COMMAND} -E remove_directory $<TARGET_FILE_DIR:sheepdog>/assets
         COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHEEPDOG_ASSETS_DIR} $<TARGET_FILE_DIR:sheepdog>/assets
         COMMENT "Copying assets")
+    add_dependencies(sheepdog sheepdog_assets)
 endif()
 
 # --- tests (desktop only) ----------------------------------------------------
@@ -160,8 +164,8 @@ if(NOT ANDROID AND NOT IOS AND NOT EMSCRIPTEN)
     target_include_directories(app_smoke PRIVATE src)
     target_link_libraries(app_smoke PRIVATE sheepdog_gfx sheepdog_game sheepdog_audio)
     target_compile_options(app_smoke PRIVATE ${SHEEPDOG_WARNINGS})
-    add_custom_command(TARGET app_smoke POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_directory ${SHEEPDOG_ASSETS_DIR} $<TARGET_FILE_DIR:app_smoke>/assets)
+    # same folder as sheepdog, so the same copy of the assets
+    add_dependencies(app_smoke sheepdog_assets)
     add_test(NAME app_smoke COMMAND app_smoke WORKING_DIRECTORY $<TARGET_FILE_DIR:app_smoke>)
 
     add_executable(test_ui tests/test_ui.cpp src/ui/ui.cpp)
